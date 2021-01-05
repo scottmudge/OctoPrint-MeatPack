@@ -1,7 +1,7 @@
-#OctoPrint-MeatPack
+# OctoPrint-MeatPack
 Getting to the **meat** of g-code. A real-time, CPU-easy, gcode compression/packing algorithm developed by Scott Mudge
 
-##Why compress/pack G-Code? What is this?
+## Why compress/pack G-Code? What is this?
 
 It's been often reported that using OctoPrint's serial interface can often cause performance bottlenecks for printer 
 firmware. Many popular printers (e.g., Prusa's MK3) are limited to ~115200 baud. For many simple prints, this 
@@ -30,7 +30,7 @@ but not all printer firmwares are compatible with these arc-type g-codes, and it
 firmware to linearize these arcs back into cartesian line segments. Not all firmwares do this well, and often
 the firmware CPU can be bogged down with this costly computation.
 
-##So what does MeatPack do?
+## So what does MeatPack do?
 
 MeatPack takes a different approach. Instead of modifying the g-code or replacing commands, it insteads uses 
 a more efficient way of transferring the data from PC/Host to Firmware.
