@@ -171,7 +171,9 @@ class PackingSerial(Serial):
         else:
             self._flush_buffer()
 
-            if self._device_packing_enabled and self._packing_enabled:
+            use_packing = True if (self._device_packing_enabled and self._packing_enabled) else False
+
+            if use_packing:
                 data_out = mp.pack_line(data.decode("UTF-8"))
             else:
                 data_out = data
@@ -183,7 +185,11 @@ class PackingSerial(Serial):
 
             if self.play_song_on_print_complete:
                 if data[0] == 'M' and data[1] == '8' and data[2] == '4':
-                    super().write(bytes(songplay.get_song_in_gcode(), "UTF-8"))
+                    self._log("End-print detected - playing song...")
+                    if use_packing:
+                        super().write(mp.pack_multiline_string(songplay.get_song_in_gcode()))
+                    else:
+                        super().write(bytes(songplay.get_song_in_gcode(), "UTF-8"))
 
         return total_bytes
 

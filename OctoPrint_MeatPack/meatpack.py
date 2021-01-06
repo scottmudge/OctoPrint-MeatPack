@@ -132,6 +132,17 @@ def pack_line(line: str) -> bytearray:
 
 
 # -------------------------------------------------------------------------------
+def pack_multiline_string(lines: str) -> bytearray:
+    bts = bytearray()
+
+    all_lines = lines.splitlines()
+    for line in all_lines:
+        bts += pack_line(line)
+
+    return bts
+
+
+# -------------------------------------------------------------------------------
 def pack_file(in_filename: str, out_filename: str):
     in_file = open(in_filename, "r")
     out_file = open(out_filename, "wb")
