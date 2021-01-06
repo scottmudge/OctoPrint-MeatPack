@@ -23,6 +23,8 @@ class PackingSerial(Serial):
         self._logger = logger
         self._log_transmission_stats: bool = True
         self.play_song_on_print_complete: bool = True
+        self._print_started = False
+        self._home_detected = False
 
         self._diagTimer = time.time()
         self._diagBytesSentActualTotal = 0
@@ -187,18 +189,28 @@ class PackingSerial(Serial):
 
             if self.play_song_on_print_complete:
                 if "M84" in data_str:
-                    self._log("End-print detected - playing song...")
+                    self._log("End of print detected, playing song...")
                     if use_packing:
                         super().write(mp.pack_multiline_string(songplay.get_song_in_gcode()))
                     else:
                         super().write(bytes(songplay.get_song_in_gcode(), "UTF-8"))
 
-        return total_bytes
 
-# -------------------------------------------------------------------------------
-    def enable_packing(self):
-        if not self._packing_enabled:
-            pass
+            # if "G28" in data_str:
+            #     self._log("Print start detected")
+            #     self._print_started = True
+            # if self._print_started:
+            #     if "M84" in data_str:
+            #         self._log("End of print detected")
+            #         self._print_started = False
+            #         if self.play_song_on_print_complete:
+            #             self._log("Playing song...")
+            #             if use_packing:
+            #                 super().write(mp.pack_multiline_string(songplay.get_song_in_gcode()))
+            #             else:
+            #                 super().write(bytes(songplay.get_song_in_gcode(), "UTF-8"))
+
+        return total_bytes
 
 # -------------------------------------------------------------------------------
     def query_packing_state(self):
