@@ -116,7 +116,7 @@ class MeatPackPlugin(
                 "Enabled" if cur_logging_param else "Disabled"))
             self._serial_obj.log_transmission_stats = cur_logging_param
 
-    def on_settings_load(self):
+    def on_after_startup(self):
         self._enable_packing = self._settings.get_boolean(["enableMeatPack"])
         self.create_serial_obj()
         self._serial_obj.packing_enabled = self._enable_packing
