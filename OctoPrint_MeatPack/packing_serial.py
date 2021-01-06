@@ -190,11 +190,12 @@ class PackingSerial(Serial):
             if self.play_song_on_print_complete:
                 if "M84" in data_str:
                     self._log("End of print detected, playing song...")
-                    if use_packing:
-                        super().write(mp.pack_multiline_string(songplay.get_song_in_gcode()))
-                    else:
-                        super().write(bytes(songplay.get_song_in_gcode(), "UTF-8"))
-
+                    lines = songplay.get_song_in_gcode()
+                    for line in lines:
+                        if use_packing:
+                            super().write(mp.pack_line(line))
+                        else:
+                            super().write(bytes(line, "UTF-8"))
 
             # if "G28" in data_str:
             #     self._log("Print start detected")

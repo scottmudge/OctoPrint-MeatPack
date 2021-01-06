@@ -11,17 +11,17 @@ def get_note_str(freq: int, length: int):
     if length < 1:
         length = 1
     elif length > 5000:
-        length = 50000
+        length = 5000
 
-    return "M300 S{} P{}\n".format(freq, length)
+    return "M300 S{} P{} \n".format(str(freq), str(length))
 
 
-def get_song_in_gcode():
-    out = str()
-    out += get_note_str(LowFreq, 83)
-    out += get_note_str(HighFreq, 680)
-    out += get_note_str(0, 1000)
-    out += get_note_str(LowFreq, 83)
-    out += get_note_str(HighFreq, 680)
+def get_song_in_gcode() -> list:
+    out = list()
+    out.append(get_note_str(988, 83))
+    out.append(get_note_str(1318, 680))
+    out.append(get_note_str(0, 100))
+    out.append(get_note_str(988, 83))
+    out.append(get_note_str(1318, 680))
     return out
 
