@@ -8,10 +8,10 @@ def get_note_str(freq: int, length: int):
     elif freq > 20000:
         freq = 20000
 
-    if len < 1:
-        len = 1
-    elif len > 5000:
-        len = 50000
+    if length < 1:
+        length = 1
+    elif length > 5000:
+        length = 50000
 
     return "M300 S{} P{}\n".format(freq, length)
 
