@@ -12,16 +12,15 @@ class PackingSerial(Serial):
     Author: Scott Mudge (mail@scottmudge.com)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, logger, **kwargs):
         self._packing_enabled = True
         self._expecting_response = False
         self._confirmed_sync = False
         self._device_packing_enabled = False
         self._sync_pending = False
         self._confirm_sync_timer = time.time()
-        self._serialLogger = logging.getLogger("SERIAL")
+        self._logger = logger
 
-        self._diagLogger = logging.getLogger("OCTOPRINT")
         self._diagTimer = time.time()
         self._diagBytesWritten = 0
 
@@ -39,10 +38,10 @@ class PackingSerial(Serial):
         self.query_packing_state()
 
     def _log(self, string):
-        self._serialLogger.debug("[MeatPack]: {}".format(string))
+        self._logger.info("[Serial]: {}".format(string))
 
     def _diagLog(self, string):
-        self._diagLogger.info("[MeatPack] {}".format(string))
+        self._logger.info("[General] {}".format(string))
 
     def readline(self, **kwargs) -> bytes:
         read = super().readline(**kwargs)
