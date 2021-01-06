@@ -1,12 +1,19 @@
 <form class="form-horizontal">
 
-    <h4>General Settings</h4>
+    <h2>MeatPack Settings</h2>
+    <h4>General</h4>
     <fieldset>
         <div class="control-group">
             <div class="controls">
                 <label class="checkbox">
-                    <input type="checkbox" data-bind="checked: settings.settings.plugins.meatpack.enableMeatPack">
+                    <input type="checkbox" data-bind="checked: settings.plugins.meatpack.enableMeatPack">
                     Enable G-Code Compression
+                </label>
+            </div>
+            <div class="controls">
+                <label class="checkbox">
+                    <input type="checkbox" data-bind="checked: settings.plugins.meatpack.logTransmissionStats">
+                    Log Transmission Statistics
                 </label>
             </div>
         </div>

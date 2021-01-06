@@ -20,9 +20,13 @@ class PackingSerial(Serial):
         self._sync_pending = False
         self._confirm_sync_timer = time.time()
         self._logger = logger
+        self._log_transmission_stats: bool = True
 
         self._diagTimer = time.time()
-        self._diagBytesWritten = 0
+        self._diagBytesSentActualTotal = 0
+        self._diagBytesSentTotal = 0
+        self._diagBytesSent = 0
+        self._diagBytesSentActual = 0
 
         self._buffer = list()
 
@@ -36,6 +40,19 @@ class PackingSerial(Serial):
     def packing_enabled(self, value: bool):
         self._packing_enabled = value
         self.query_packing_state()
+
+    @property
+    def log_transmission_stats(self):
+        return self._log_transmission_stats
+
+    @log_transmission_stats.setter
+    def log_transmission_stats(self, value: bool):
+        self._log_transmission_stats = value
+        self._diagBytesSent = 0
+        self._diagBytesSentActual = 0
+        self._diagBytesSentActualTotal = 0
+        self._diagBytesSentTotal = 0
+        self._diagTimer = time.time()
 
     def _log(self, string):
         self._logger.info("[Serial]: {}".format(string))
@@ -96,21 +113,34 @@ class PackingSerial(Serial):
 
         return read
 
-    def _benchmark_write_speed(self, bytes_written):
-        self._diagBytesWritten += bytes_written
+    def _benchmark_write_speed(self, bytes_sent_actual, bytes_sent_total):
+        if not self._log_transmission_stats:
+            return
+
+        self._diagBytesSentActual += bytes_sent_actual
+        self._diagBytesSentActualTotal += bytes_sent_actual
+
+        self._diagBytesSent += bytes_sent_total
+        self._diagBytesSentTotal += bytes_sent_total
 
         curTime = time.time()
         elapsed_sec = float(curTime - self._diagTimer)
         if elapsed_sec > 10.0:
             self._diagTimer = curTime
-            self._diagLog("Avg bytes per second sent: {}".format(float(self._diagBytesWritten) / elapsed_sec))
-            self._diagBytesWritten = 0
+            self._log("Total KB Sent: {:.3f} \\ Effective KB Sent: {:.3f} \\ Comp. Ratio: "
+                      "{:.3f} \\ Avg. Eff|Total KB/sec: {:.3f}/s | {:.3f}/s".
+                      format((self._diagBytesSentTotal / 1024.0), (self._diagBytesSentActualTotal / 1024.0),
+                             (self._diagBytesSentActualTotal / self._diagBytesSentTotal),
+                             (self._diagBytesSentActual / 1024.0 / elapsed_sec),
+                             (self._diagBytesSent / 1024.0 / elapsed_sec)))
+            self._diagBytesSent = 0
+            self._diagBytesSentActual = 0
 
     def _flush_buffer(self):
         if not self._sync_pending and self._confirmed_sync:
             if len(self._buffer) > 0:
                 for line in self._buffer:
-                    if self._confirmed_sync and  self._device_packing_enabled and self._packing_enabled:
+                    if self._confirmed_sync and self._device_packing_enabled and self._packing_enabled:
                         super().write(mp.pack_line(line.decode("UTF-8")))
                     else:
                         super().write(line)
@@ -119,20 +149,24 @@ class PackingSerial(Serial):
     def write(self, data):
         # If this is true, we are waiting for a response for the device state. Let's not write anything until it's
         # complete
+        total_bytes = len(data)
+
         if not self._confirmed_sync or self._sync_pending:
             self._buffer.append(data)
         else:
             self._flush_buffer()
 
             if self._device_packing_enabled and self._packing_enabled:
-                super().write(mp.pack_line(data.decode("UTF-8")))
+                data_out = mp.pack_line(data.decode("UTF-8"))
             else:
-                super().write(data)
+                data_out = data
 
-        bytes_written = len(data)
-        self._benchmark_write_speed(bytes_written)
+            super().write(data_out)
+            actual_bytes = len(data_out)
 
-        return bytes_written
+            self._benchmark_write_speed(actual_bytes, total_bytes)
+
+        return total_bytes
 
     def enable_packing(self):
         if not self._packing_enabled:
@@ -151,4 +185,3 @@ class PackingSerial(Serial):
             self._expecting_response = True
         else:
             self._log("Cannot query packing state -- port not open.")
-

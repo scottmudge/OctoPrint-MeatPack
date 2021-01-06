@@ -22,7 +22,7 @@ class MeatPackPlugin(
     def __init__(self):
         super().__init__()
         self._enable_packing = True
-        self._serial_obj = None
+        self._serial_obj: PackingSerial = None
 
     def serial_factory_hook(self, comm_instance, port, baudrate, read_timeout, *args, **kwargs):
         self.create_serial_obj()
@@ -63,14 +63,15 @@ class MeatPackPlugin(
 
     def get_settings_defaults(self):
         return dict(
-            enableMeatPack=True
+            enableMeatPack=True,
+            logTransmissionStats=True,
         )
 
     def get_settings_version(self):
         return 1
 
     def on_settings_migrate(self, target, current=None):
-        pass
+        return
 
     def create_serial_obj(self):
         if not self._serial_obj:
@@ -101,24 +102,27 @@ class MeatPackPlugin(
             )
         )
 
-    def on_after_startup(self):
-        self._logger.info("settings.enableMeatPack: {}".format(self._settings.get_boolean(["enableMeatPack"])))
-        self._enable_packing = self._settings.get_boolean(["enableMeatPack"])
-        self.create_serial_obj()
-        self._serial_obj.packing_enabled = self._enable_packing
-        self._logger.info("MeatPack version {} loaded... current state is {}"
-                          .format(self._plugin_version, "Enabled" if self._enable_packing else "Disabled"))
-
     def on_settings_save(self, data):
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
-        self._logger.info("Settings changed\n\t> enableMeatPack: {}"
-                          .format(self._settings.get_boolean(["enableMeatPack"])))
         cur_packing_param = self._settings.get_boolean(["enableMeatPack"])
+        cur_logging_param = self._settings.get_boolean(["logTransmissionStats"])
         if self._enable_packing != cur_packing_param:
             self._logger.info("MeatPack changed, now {}... synchronizing with device."
                               .format("Enabled" if cur_packing_param else "Disabled"))
             self._enable_packing = cur_packing_param
             self._serial_obj.packing_enabled = self._enable_packing
+        if self._serial_obj.log_transmission_stats != cur_logging_param:
+            self._logger.info("MeatPack statistics logging changed: {}".format(
+                "Enabled" if cur_logging_param else "Disabled"))
+            self._serial_obj.log_transmission_stats = cur_logging_param
+
+    def on_settings_load(self):
+        self._enable_packing = self._settings.get_boolean(["enableMeatPack"])
+        self.create_serial_obj()
+        self._serial_obj.packing_enabled = self._enable_packing
+        self._logger.info("MeatPack version {} loaded... current state is {}"
+                          .format(self._plugin_version, "Enabled" if self._enable_packing else "Disabled"))
+        self._serial_obj.log_transmission_stats = self._settings.get_boolean(["logTransmissionStats"])
 
 
 __plugin_name__ = "MeatPack"
