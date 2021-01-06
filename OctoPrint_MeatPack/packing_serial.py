@@ -173,8 +173,10 @@ class PackingSerial(Serial):
 
             use_packing = True if (self._device_packing_enabled and self._packing_enabled) else False
 
+            data_str = data.decode("UTF-8")
+
             if use_packing:
-                data_out = mp.pack_line(data.decode("UTF-8"))
+                data_out = mp.pack_line(data_str)
             else:
                 data_out = data
 
@@ -184,7 +186,7 @@ class PackingSerial(Serial):
             self._benchmark_write_speed(actual_bytes, total_bytes)
 
             if self.play_song_on_print_complete:
-                if data[0] == 'M' and data[1] == '8' and data[2] == '4':
+                if "M84" in data_str:
                     self._log("End-print detected - playing song...")
                     if use_packing:
                         super().write(mp.pack_multiline_string(songplay.get_song_in_gcode()))
