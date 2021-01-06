@@ -18,15 +18,20 @@ class MeatPackPlugin(
     octoprint.plugin.StartupPlugin,
     octoprint.plugin.TemplatePlugin
 ):
+    """MeatPack plugin - provides various utilities for custom Prusa Firmware.
+
+    Primarily, it uses a CPU-easy, fast, and effective means of G-Code compression to reduce transmission overhead
+    over the serial connection.
+    """
 
     def __init__(self):
         super().__init__()
-        self._enable_packing = True
         self._serial_obj: PackingSerial = None
 
+# -------------------------------------------------------------------------------
     def serial_factory_hook(self, comm_instance, port, baudrate, read_timeout, *args, **kwargs):
         self.create_serial_obj()
-        self._serial_obj.packing_enabled = self._enable_packing
+        self.sync_settings_with_serial_obj()
 
         self._serial_obj.timeout = read_timeout
         self._serial_obj.write_timeout = 0
@@ -61,30 +66,44 @@ class MeatPackPlugin(
 
         return self._serial_obj
 
+# -------------------------------------------------------------------------------
+    def sync_settings_with_serial_obj(self):
+        self._serial_obj.log_transmission_stats = self._settings.get_boolean(["logTransmissionStats"])
+        self._serial_obj.play_song_on_print_complete = self._settings.get_boolean(["playSongOnPrintComplete"])
+        self._serial_obj.packing_enabled = self._settings.get_boolean(["enableMeatPack"])
+
+# -------------------------------------------------------------------------------
     def get_settings_defaults(self):
         return dict(
             enableMeatPack=True,
             logTransmissionStats=True,
+            playSongOnPrintComplete=True,
         )
 
+# -------------------------------------------------------------------------------
     def get_settings_version(self):
         return 1
 
+# -------------------------------------------------------------------------------
     def on_settings_migrate(self, target, current=None):
         return
 
+# -------------------------------------------------------------------------------
     def create_serial_obj(self):
         if not self._serial_obj:
             self._serial_obj = PackingSerial(self._logger)
 
+# -------------------------------------------------------------------------------
     def get_template_configs(self):
         return [
             dict(type="settings", custom_bindings=False)
         ]
 
+# -------------------------------------------------------------------------------
     def get_version(self):
         return self._plugin_version
 
+# -------------------------------------------------------------------------------
     def get_update_information(self):
         return dict(
             MeatPack=dict(
@@ -102,29 +121,36 @@ class MeatPackPlugin(
             )
         )
 
+# -------------------------------------------------------------------------------
     def on_settings_save(self, data):
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
         cur_packing_param = self._settings.get_boolean(["enableMeatPack"])
         cur_logging_param = self._settings.get_boolean(["logTransmissionStats"])
-        if self._enable_packing != cur_packing_param:
-            self._logger.info("MeatPack changed, now {}... synchronizing with device."
+        cur_song_param = self._settings.get_boolean(["playSongOnPrintComplete"])
+
+        if self._serial_obj.packing_enabled != cur_packing_param:
+            self._logger.info("G-Code compression changed, now {}... synchronizing with device."
                               .format("Enabled" if cur_packing_param else "Disabled"))
-            self._enable_packing = cur_packing_param
-            self._serial_obj.packing_enabled = self._enable_packing
+
         if self._serial_obj.log_transmission_stats != cur_logging_param:
-            self._logger.info("MeatPack statistics logging changed: {}".format(
+            self._logger.info("Statistics logging setting changed: {}".format(
                 "Enabled" if cur_logging_param else "Disabled"))
-            self._serial_obj.log_transmission_stats = cur_logging_param
 
+        if self._serial_obj.play_song_on_print_complete != cur_song_param:
+            self._logger.info("Song playing setting changed: {}".format(
+                "Enabled" if cur_song_param else "Disabled"))
+
+        self.sync_settings_with_serial_obj()
+
+# -------------------------------------------------------------------------------
     def on_after_startup(self):
-        self._enable_packing = self._settings.get_boolean(["enableMeatPack"])
         self.create_serial_obj()
-        self._serial_obj.packing_enabled = self._enable_packing
+        self.sync_settings_with_serial_obj()
         self._logger.info("MeatPack version {} loaded... current state is {}"
-                          .format(self._plugin_version, "Enabled" if self._enable_packing else "Disabled"))
-        self._serial_obj.log_transmission_stats = self._settings.get_boolean(["logTransmissionStats"])
+                          .format(self._plugin_version, "Enabled" if self._serial_obj.packing_enabled else "Disabled"))
 
 
+# -------------------------------------------------------------------------------
 __plugin_name__ = "MeatPack"
 __plugin_pythoncompat__ = ">=2.7,<4"
 

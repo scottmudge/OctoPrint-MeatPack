@@ -1,5 +1,6 @@
 from serial import Serial
 import OctoPrint_MeatPack.meatpack as mp
+import OctoPrint_MeatPack.song_player as songplay
 import logging
 import time
 
@@ -21,6 +22,7 @@ class PackingSerial(Serial):
         self._confirm_sync_timer = time.time()
         self._logger = logger
         self._log_transmission_stats: bool = True
+        self.play_song_on_print_complete: bool = True
 
         self._diagTimer = time.time()
         self._diagBytesSentActualTotal = 0
@@ -32,6 +34,7 @@ class PackingSerial(Serial):
 
         super().__init__(**kwargs)
 
+# -------------------------------------------------------------------------------
     @property
     def packing_enabled(self):
         return self._packing_enabled
@@ -41,25 +44,30 @@ class PackingSerial(Serial):
         self._packing_enabled = value
         self.query_packing_state()
 
+# -------------------------------------------------------------------------------
     @property
     def log_transmission_stats(self):
         return self._log_transmission_stats
 
     @log_transmission_stats.setter
     def log_transmission_stats(self, value: bool):
-        self._log_transmission_stats = value
-        self._diagBytesSent = 0
-        self._diagBytesSentActual = 0
-        self._diagBytesSentActualTotal = 0
-        self._diagBytesSentTotal = 0
-        self._diagTimer = time.time()
+        if self._log_transmission_stats != value:
+            self._log_transmission_stats = value
+            self._diagBytesSent = 0
+            self._diagBytesSentActual = 0
+            self._diagBytesSentActualTotal = 0
+            self._diagBytesSentTotal = 0
+            self._diagTimer = time.time()
 
+# -------------------------------------------------------------------------------
     def _log(self, string):
         self._logger.info("[Serial]: {}".format(string))
 
+# -------------------------------------------------------------------------------
     def _diagLog(self, string):
         self._logger.info("[General] {}".format(string))
 
+# -------------------------------------------------------------------------------
     def readline(self, **kwargs) -> bytes:
         read = super().readline(**kwargs)
 
@@ -113,6 +121,7 @@ class PackingSerial(Serial):
 
         return read
 
+# -------------------------------------------------------------------------------
     def _benchmark_write_speed(self, bytes_sent_actual, bytes_sent_total):
         if not self._log_transmission_stats:
             return
@@ -125,27 +134,33 @@ class PackingSerial(Serial):
 
         curTime = time.time()
         elapsed_sec = float(curTime - self._diagTimer)
-        if elapsed_sec > 10.0:
+
+        if elapsed_sec > 30.0:
             self._diagTimer = curTime
-            self._log("Total KB Sent: {:.3f} \\ Effective KB Sent: {:.3f} \\ Comp. Ratio: "
-                      "{:.3f} \\ Avg. Eff|Total KB/sec: {:.3f}/s | {:.3f}/s".
-                      format((self._diagBytesSentTotal / 1024.0), (self._diagBytesSentActualTotal / 1024.0),
-                             (self._diagBytesSentActualTotal / self._diagBytesSentTotal),
-                             (self._diagBytesSentActual / 1024.0 / elapsed_sec),
-                             (self._diagBytesSent / 1024.0 / elapsed_sec)))
+            totalPerSec = (self._diagBytesSent / 1024.0 / elapsed_sec)
+
+            if totalPerSec > 0.005:
+                self._log("Total KB Sent: {:.3f} \\ Effective KB Sent: {:.3f} \\ Comp. Ratio: "
+                          "{:.3f} \\ Avg. Eff|Total KB/sec: {:.3f}/s | {:.3f}/s".
+                          format((self._diagBytesSentTotal / 1024.0), (self._diagBytesSentActualTotal / 1024.0),
+                                 (self._diagBytesSentActualTotal / self._diagBytesSentTotal),
+                                 (self._diagBytesSentActual / 1024.0 / elapsed_sec),
+                                 totalPerSec))
             self._diagBytesSent = 0
             self._diagBytesSentActual = 0
 
+# -------------------------------------------------------------------------------
     def _flush_buffer(self):
         if not self._sync_pending and self._confirmed_sync:
             if len(self._buffer) > 0:
                 for line in self._buffer:
-                    if self._confirmed_sync and self._device_packing_enabled and self._packing_enabled:
+                    if self._device_packing_enabled and self._packing_enabled:
                         super().write(mp.pack_line(line.decode("UTF-8")))
                     else:
                         super().write(line)
                 self._buffer.clear()
 
+# -------------------------------------------------------------------------------
     def write(self, data):
         # If this is true, we are waiting for a response for the device state. Let's not write anything until it's
         # complete
@@ -166,12 +181,18 @@ class PackingSerial(Serial):
 
             self._benchmark_write_speed(actual_bytes, total_bytes)
 
+            if self.play_song_on_print_complete:
+                if data[0] == 'M' and data[1] == '8' and data[2] == '4':
+                    super().write(bytes(songplay.get_song_in_gcode(), "UTF-8"))
+
         return total_bytes
 
+# -------------------------------------------------------------------------------
     def enable_packing(self):
         if not self._packing_enabled:
             pass
 
+# -------------------------------------------------------------------------------
     def query_packing_state(self):
         """Queries the packing state from the system. Sends command and awaits response"""
         if self.isOpen():
