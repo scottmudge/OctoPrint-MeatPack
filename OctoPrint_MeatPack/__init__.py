@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import octoprint.plugin
 from octoprint.util.platform import get_os, set_close_exec
 from octoprint.settings import settings
+import flask
 import serial
 import os
 from OctoPrint_MeatPack.packing_serial import PackingSerial
@@ -16,7 +17,9 @@ __copyright__ = "Copyright (C) 2020-2021 Scott Mudge - Released under terms of t
 class MeatPackPlugin(
     octoprint.plugin.SettingsPlugin,
     octoprint.plugin.StartupPlugin,
-    octoprint.plugin.TemplatePlugin
+    octoprint.plugin.TemplatePlugin,
+    octoprint.plugin.AssetPlugin,
+    octoprint.plugin.SimpleApiPlugin
 ):
     """MeatPack plugin - provides various utilities for custom Prusa Firmware.
 
@@ -81,6 +84,13 @@ class MeatPackPlugin(
         )
 
 # -------------------------------------------------------------------------------
+    def get_assets(self):
+        return {
+            "js": ["js/meatpack.js"],
+            "clientjs": ["clientjs/meatpack.js"],
+        }
+
+# -------------------------------------------------------------------------------
     def get_settings_version(self):
         return 1
 
@@ -92,12 +102,23 @@ class MeatPackPlugin(
     def create_serial_obj(self):
         if not self._serial_obj:
             self._serial_obj = PackingSerial(self._logger)
+            self._serial_obj.statsUpdateCallback = self.serial_obj_stats_update_callback
+
+    def serial_obj_stats_update_callback(self):
+        self._plugin_manager.send_plugin_message(self._identifier, {"message": "update"})
 
 # -------------------------------------------------------------------------------
     def get_template_configs(self):
         return [
             dict(type="settings", custom_bindings=False)
         ]
+
+# -------------------------------------------------------------------------------
+    def on_api_get(self, request):
+        return flask.jsonify(
+            transmissionStats=self._serial_obj.get_transmission_stats(),
+            enabled=self._serial_obj.packing_enabled
+        )
 
 # -------------------------------------------------------------------------------
     def get_version(self):
@@ -117,7 +138,7 @@ class MeatPackPlugin(
                 current=self._plugin_version,
 
                 # update method: pip
-                pip="https://github.com/ScottMudge/OctoPrint-MeatPack/archive/{target_version}.zip"
+                pip="https://github.com/ScottMudge/OctoPrint-MeatPack/releases/latest/download/master.zip"
             )
         )
 
@@ -160,4 +181,7 @@ def __plugin_load__():
     __plugin_implementation__ = MeatPackPlugin()
 
     global __plugin_hooks__
-    __plugin_hooks__ = {"octoprint.comm.transport.serial.factory": __plugin_implementation__.serial_factory_hook}
+    __plugin_hooks__ = {"octoprint.comm.transport.serial.factory":
+                            __plugin_implementation__.serial_factory_hook,
+                        "octoprint.plugin.softwareupdate.check_config":
+                            __plugin_implementation__.get_update_information}

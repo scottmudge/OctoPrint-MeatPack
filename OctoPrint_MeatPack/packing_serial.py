@@ -32,6 +32,13 @@ class PackingSerial(Serial):
         self._diagBytesSent = 0
         self._diagBytesSentActual = 0
 
+        # Stats
+        self._totalKBSent = 0.0
+        self._packedKBSent = 0.0
+        self._totalKBSec = 0.0
+
+        self.statsUpdateCallback = None
+
         self._buffer = list()
 
         super().__init__(**kwargs)
@@ -123,7 +130,15 @@ class PackingSerial(Serial):
 
         return read
 
-# -------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
+    def get_transmission_stats(self) -> dict:
+        return {
+            'totalKBytes': self._totalKBSent,
+            'packedKBytes': self._packedKBSent,
+            'totalKBSec': self._totalKBSec,
+        }
+
+        # -------------------------------------------------------------------------------
     def _benchmark_write_speed(self, bytes_sent_actual, bytes_sent_total):
         if not self._log_transmission_stats:
             return
@@ -137,17 +152,16 @@ class PackingSerial(Serial):
         curTime = time.time()
         elapsed_sec = float(curTime - self._diagTimer)
 
-        if elapsed_sec > 30.0:
+        if elapsed_sec > 2.0:
             self._diagTimer = curTime
-            totalPerSec = (self._diagBytesSent / 1024.0 / elapsed_sec)
 
-            if totalPerSec > 0.005:
-                self._log("Total KB Sent: {:.3f} \\ Effective KB Sent: {:.3f} \\ Comp. Ratio: "
-                          "{:.3f} \\ Avg. Eff|Total KB/sec: {:.3f}/s | {:.3f}/s".
-                          format((self._diagBytesSentTotal / 1024.0), (self._diagBytesSentActualTotal / 1024.0),
-                                 (self._diagBytesSentActualTotal / self._diagBytesSentTotal),
-                                 (self._diagBytesSentActual / 1024.0 / elapsed_sec),
-                                 totalPerSec))
+            self._totalKBSent = (self._diagBytesSentTotal / 1024.0)
+            self._packedKBSent = (self._diagBytesSentActualTotal / 1024.0)
+            self._totalKBSec = (self._diagBytesSent / 1024.0 / elapsed_sec)
+
+            if callable(self.statsUpdateCallback):
+                self.statsUpdateCallback()
+
             self._diagBytesSent = 0
             self._diagBytesSentActual = 0
 
