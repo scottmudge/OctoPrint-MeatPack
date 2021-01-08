@@ -20,9 +20,9 @@ MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Fir
 
 ## Installation
 
-1. Open a terminal or console (or SSH into your Raspberry Pi if using one) and activate OctoPrint's virtual environment (Python). Typically this will be in `~/oprint/`.
+1. Open a terminal or console (or SSH into your Raspberry Pi if using one) and activate OctoPrint's virtual environment (Python). Typically this will be in `~/oprint/`. You can activate the virtual environment by using the following command: 
 
-You can activate the virtual environment by using the following command: `source ~/oprint/bin/activate`
+`source ~/oprint/bin/activate`
 
 2. After activating the OctoPrint environment, run the following command:
 
