@@ -14,7 +14,9 @@ This can be disabled in the plugin options page.
 
 https://github.com/scottmudge/Prusa-Firmware-MeatPack
 
-### Only version 3.9.3 from the fork above is compatible!
+MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/3.9.3-MeatPack
+
+### Only version 3.9.3 from the fork above is compatible! P
 
 ## Installation
 
