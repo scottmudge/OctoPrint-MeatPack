@@ -68,3 +68,7 @@ in the event that any character *does not* fall into the list of the 15-most com
 **MeatPack** also provides for a rudimentary communication/control layer by using a special character (0xFF) sent in a 
 specific sequence. 0XFF is virtually never found naturally in g-code, so it is can be considered a reserved character.
 
+## Why "Meat"? 
+
+My cat's name is Meatball, I thought it sounded fun. 
+
