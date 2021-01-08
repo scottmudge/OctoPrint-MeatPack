@@ -34,7 +34,9 @@ You can activate the virtual environment by using the following command: `source
 
 ### Known Issues:
 
-1. This doesn't work with any firmware __except the firmware I modified above with added MeatPack support!__. Feel free to copy the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository, just make sure you attribute the forks of other firmware to me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
+1. This doesn't work with any firmware __except the firmware I modified above with added MeatPack support!__. 
+
+Feel free to copy the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository and use them in other firmwares. It's very portable code, with only the serial output needing to be ported/modified. If you use it, just make sure you attribute the forks of other firmware to me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
 
 2. It doesn't work with the Virtual Printer in OctoPrint.
 
