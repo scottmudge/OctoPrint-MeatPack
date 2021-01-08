@@ -16,6 +16,30 @@ https://github.com/scottmudge/Prusa-Firmware-MeatPack
 
 ### Only version 3.9.3 from the fork above is compatible!
 
+## Installation
+
+1. Open a terminal or console (or SSH into your Raspberry Pi if using one) and activate OctoPrint's virtual environment (Python). Typically this will be in `~/oprint/`.
+
+You can activate the virtual environment by using the following command: `source ~/oprint/bin/activate`
+
+2. After activating the OctoPrint environment, run the following command:
+
+`pip install git+https://github.com/scottmudge/OctoPrint-MeatPack.git`
+
+3. Restart your OctoPrint server, or restart the machine.
+
+4. After installation, you should see a "MeatPrint" options page, and a new "TX Statistics" section in the "State" side bar section (if connected to your printer).
+
+### Known Issues:
+
+1. This doesn't work with any firmware __except the firmware I modified above with added MeatPack support!__. Feel free to copy the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository, just make sure you attribute the forks of other firmware to me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
+
+2. It doesn't work with the Virtual Printer in OctoPrint.
+
+## How does it work?
+
+This plugin creates a wrapper around the serial.Seral() object. This wrapper overrides the read and write operations to provide extra utility. The PackingSerial class manages all of the state control and data packing/compression automatically. State control is managed by sending specific data packets to the modified firmware, telling it to turn on or turn off MeatPacking support dynamically. Once enabled, the PackingSerial verifies that it is enabled in the firmware by sending a query command, and once the states are synchronized, it sends data with the packing approach detailed below.
+
 ## Why compress/pack G-Code? What is this?
 
 It's been often reported that using OctoPrint's serial interface can often cause performance bottlenecks for printer 
