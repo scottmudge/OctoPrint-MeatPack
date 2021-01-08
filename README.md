@@ -100,3 +100,6 @@ specific sequence. 0XFF is virtually never found naturally in g-code, so it is c
 
 My cat's name is Meatball, I thought it sounded fun. 
 
+Obligatory cat photo:
+
+![photo](https://i.imgur.com/QgUuyzs.png)
