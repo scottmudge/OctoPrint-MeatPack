@@ -34,11 +34,13 @@ MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Fir
 
 ### Known Issues:
 
-1. This doesn't work with any firmware __except the firmware I modified above with added MeatPack support!__. 
+1. This requires a minor modification to your printer's firmware! I have currently only compiled modified firmware for Prusa's MK3/3S printers! 
 
-Feel free to copy the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository and use them in other firmwares. It's very portable code, with only the serial output needing to be ported/modified. If you use it, just make sure you attribute the forks of other firmware to me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
+I would like to integrate these changes into Marlin or similar firmwares as well. The changes are very minor, and only require placing a couple function calls at the location where serial characters are read and parsed. In Prusa's firmware, this is in `cmdqueue.c`. 
 
-2. It doesn't work with the Virtual Printer in OctoPrint.
+Feel free to use the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository and use them in other firmwares (perhaps use it as a git module, to keep it up to date if I make modifications). If you use it, just make sure you attribute the me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
+
+2. It doesn't work with the Virtual Printer in OctoPrint. Obviously... it's not a real serial connection.
 
 ## How does it work?
 
