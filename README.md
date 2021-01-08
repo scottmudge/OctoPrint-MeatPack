@@ -1,6 +1,51 @@
 # OctoPrint-MeatPack
 Getting to the **meat** of g-code. A real-time, CPU-easy, gcode compression/packing algorithm developed by Scott Mudge
 
+## Current Features
+
+
+1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. Please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
+2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
+![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
+This can be disabled in the plugin options page.
+3. Added an optional feature (can be disabled in plugin settings) to play a "Mario coin" noise on the printer after a print is completed.
+
+## NOTE: To use MeatPack, please install a compatible version of the Prusa firmware here:
+
+https://github.com/scottmudge/Prusa-Firmware-MeatPack
+
+MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/3.9.3-MeatPack
+
+### Only version 3.9.3 from the fork above is compatible!
+
+## Installation
+
+1. Open a terminal or console (or SSH into your Raspberry Pi if using one) and activate OctoPrint's virtual environment (Python). Typically this will be in `~/oprint/`. You can activate the virtual environment by using the following command: 
+
+`source ~/oprint/bin/activate`
+
+2. After activating the OctoPrint environment, run the following command:
+
+`pip install git+https://github.com/scottmudge/OctoPrint-MeatPack.git`
+
+3. Restart your OctoPrint server, or restart the machine.
+
+4. After installation, you should see a "MeatPrint" options page, and a new "TX Statistics" section in the "State" side bar section (if connected to your printer).
+
+### Known Issues:
+
+1. This requires a minor modification to your printer's firmware! I have currently only compiled modified firmware for Prusa's MK3/3S printers! 
+
+I would like to integrate these changes into Marlin or similar firmwares as well. The changes are very minor, and only require placing a couple function calls at the location where serial characters are read and parsed. In Prusa's firmware, this is in `cmdqueue.c`. 
+
+Feel free to use the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository and use them in other firmwares (perhaps use it as a git module, to keep it up to date if I make modifications). If you use it, just make sure you attribute me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
+
+2. It doesn't work with the Virtual Printer in OctoPrint. Obviously... it's not a real serial connection.
+
+## How does it work?
+
+This plugin creates a wrapper around the serial.Seral() object. This wrapper overrides the read and write operations to provide extra utility. The PackingSerial class manages all of the state control and data packing/compression automatically. State control is managed by sending specific data packets to the modified firmware, telling it to turn on or turn off MeatPacking support dynamically. Once enabled, the PackingSerial verifies that it is enabled in the firmware by sending a query command, and once the states are synchronized, it sends data with the packing approach detailed below.
+
 ## Why compress/pack G-Code? What is this?
 
 It's been often reported that using OctoPrint's serial interface can often cause performance bottlenecks for printer 
@@ -53,3 +98,10 @@ in the event that any character *does not* fall into the list of the 15-most com
 **MeatPack** also provides for a rudimentary communication/control layer by using a special character (0xFF) sent in a 
 specific sequence. 0XFF is virtually never found naturally in g-code, so it is can be considered a reserved character.
 
+## Why "Meat"? 
+
+My cat's name is Meatball, I thought it sounded fun. 
+
+Obligatory cat photo:
+
+![photo](https://i.imgur.com/QgUuyzs.png)
