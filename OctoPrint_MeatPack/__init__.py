@@ -133,8 +133,8 @@ class MeatPackPlugin(
 # -------------------------------------------------------------------------------
     def get_update_information(self):
         return dict(
-            MeatPack=dict(
-                displayName="MeatPack",
+            meatpack=dict(
+                displayName="MeatPack - Automatic G-Code Compression",
                 displayVersion=self._plugin_version,
 
                 # version check: github repository
@@ -144,7 +144,7 @@ class MeatPackPlugin(
                 current=self._plugin_version,
 
                 # update method: pip
-                pip="https://github.com/ScottMudge/OctoPrint-MeatPack/releases/latest/download/master.zip"
+                pip="https://github.com/ScottMudge/OctoPrint-MeatPack/archive/{target}.zip"
             )
         )
 
