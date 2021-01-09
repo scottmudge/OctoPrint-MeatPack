@@ -26,7 +26,7 @@ MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Fir
 
 2. After activating the OctoPrint environment, run the following command:
 
-`pip install git+https://github.com/scottmudge/OctoPrint-MeatPack.git`
+`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.2.0.zip`
 
 3. Restart your OctoPrint server, or restart the machine.
 
