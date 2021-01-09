@@ -1,4 +1,5 @@
-# OctoPrint-MeatPack
+![# OctoPrint-MeatPack](https://raw.githubusercontent.com/scottmudge/OctoPrint-MeatPack/master/MeatPack_Logo.png)
+
 Getting to the **meat** of g-code. A real-time, CPU-easy, gcode compression/packing algorithm developed by Scott Mudge
 
 ## Current Features (v1.2.6)
