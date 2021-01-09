@@ -31,7 +31,9 @@ class ThreadedSongPlayer:
                 break
 
             self._serial.write(bytes(note_text, "UTF-8"))
-            time.sleep(float(note_len_ms + note_len_offset_ms) / 1000.0)
+            sleep_per = float(note_len_ms + note_len_offset_ms) / 1000.0
+            if sleep_per > 0.0:
+                time.sleep(sleep_per)
 
         self._running = False
 
