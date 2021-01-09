@@ -13,7 +13,7 @@ def get_note_freq(note: str, octave: int) -> int:
     return int(round(BaseNotes[note] * (2**(octave-1))))
 
 
-BPM = 140
+BPM = 40
 EightNote = int(round(((60.0 / float(BPM)) / 8.0) * 1000))
 QuarterNote = int(round(EightNote * 2.0))
 HalfNote = int(round(QuarterNote * 2.0))
