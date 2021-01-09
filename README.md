@@ -1,11 +1,10 @@
 ![# OctoPrint-MeatPack](https://raw.githubusercontent.com/scottmudge/OctoPrint-MeatPack/master/MeatPack_Logo.png)
 
-Getting to the **meat** of g-code. A real-time, CPU-easy, G-Code compression/packing algorithm developed by Scott Mudge
+Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code compression!
 
 ## Current Features (v1.2.6)
 
-
-1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. Please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
+1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. *NOTE:* please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
 ![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
 
@@ -29,6 +28,8 @@ MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Fir
 ### Only version 3.9.3 from the fork above is compatible!
 
 ## Installation
+
+**NOTE:** The plugin has been submitted to the official OctoPrint plugins repository, but is pending review and approval. To manually install, please follow the directions below.
 
 1. Open a terminal or console (or SSH into your Raspberry Pi if using one) and activate OctoPrint's virtual environment (Python). Typically this will be in `~/oprint/`. You can activate the virtual environment by using the following command: 
 
