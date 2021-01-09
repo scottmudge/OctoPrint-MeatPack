@@ -1,14 +1,23 @@
 # OctoPrint-MeatPack
 Getting to the **meat** of g-code. A real-time, CPU-easy, gcode compression/packing algorithm developed by Scott Mudge
 
-## Current Features
+## Current Features (v1.2.6)
 
 
 1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. Please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
 ![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
-This can be disabled in the plugin options page.
-3. Added an optional feature (can be disabled in plugin settings) to play a "Mario coin" noise on the printer after a print is completed.
+
+    * "**Packed Tx**" - This is the *actual* amount of data sent over the serial connection. The data that has been packed.
+    * "**Total Tx**" - This is the *effective* amount of data sent over the serial connection, after it is unpacked on the other end. Should be close to the original (though OctoPrint often adds error checking data to lines of g-code, so it will be a bit higher).
+    * "**Comp. Ratio**" - This is the *compression ratio*, bascially a measure of how much bandwidth you are gaining/saving. It's the factor by which the data has been effectively shrunk.
+    * "**TX Rate**" - This is a measure of how much data is being sent over the serial connection per second (average). Updated every ~2 seconds.
+    * "**Packing State**"-- Lets you know if MeatPack compression is enabled or not.
+
+
+    __NOTE__: This extra text section can be disabled in the plugin options page.
+
+3. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
 
 ## NOTE: To use MeatPack, please install a compatible version of the Prusa firmware here:
 
@@ -26,7 +35,7 @@ MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Fir
 
 2. After activating the OctoPrint environment, run the following command:
 
-`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.2.0.zip`
+`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.2.6.zip`
 
 3. Restart your OctoPrint server, or restart the machine.
 
