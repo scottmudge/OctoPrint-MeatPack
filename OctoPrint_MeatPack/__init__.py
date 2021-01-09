@@ -80,7 +80,7 @@ class MeatPackPlugin(
         return dict(
             enableMeatPack=True,
             logTransmissionStats=True,
-            playSongOnPrintComplete=True,
+            playSongOnPrintComplete=False,
         )
 
 # -------------------------------------------------------------------------------
