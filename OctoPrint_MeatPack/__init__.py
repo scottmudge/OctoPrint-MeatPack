@@ -139,12 +139,12 @@ class MeatPackPlugin(
 
                 # version check: github repository
                 type="github_release",
-                user="ScottMudge",
+                user="scottmudge",
                 repo="OctoPrint-MeatPack",
                 current=self._plugin_version,
 
                 # update method: pip
-                pip="https://github.com/ScottMudge/OctoPrint-MeatPack/archive/{target}.zip"
+                pip="https://github.com/scottmudge/OctoPrint-MeatPack/archive/{target}.zip"
             )
         )
 
