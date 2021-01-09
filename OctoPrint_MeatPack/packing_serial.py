@@ -1,8 +1,40 @@
 from serial import Serial
 import OctoPrint_MeatPack.meatpack as mp
 import OctoPrint_MeatPack.song_player as songplay
-import logging
+from threading import Thread
 import time
+
+
+class ThreadedSongPlayer:
+    def __init__(self, serial_obj):
+        self._running = False
+        self._serial = serial_obj
+
+    def terminate(self):
+        self._running = False
+
+    def is_running(self) -> bool:
+        return self._running
+
+    def run(self):
+        self._running = True
+        # tuple -- (note len in ms, g-code)
+        song = songplay.get_song_in_gcode()
+
+        note_len_offset_ms = -10
+
+        for note in song:
+            note_len_ms = note[0]
+            note_text = note[1]
+
+            if not self._running:
+                break
+
+            self._serial.write(bytes(note_text, "UTF-8"))
+            time.sleep(float(note_len_ms + note_len_offset_ms) / 1000.0)
+
+        self._running = False
+
 
 
 class PackingSerial(Serial):
@@ -40,6 +72,8 @@ class PackingSerial(Serial):
         self.statsUpdateCallback = None
 
         self._buffer = list()
+        self._song_player: ThreadedSongPlayer = None
+        self._song_player_thread: Thread = None
 
         super().__init__(**kwargs)
 
@@ -75,6 +109,13 @@ class PackingSerial(Serial):
 # -------------------------------------------------------------------------------
     def _diagLog(self, string):
         self._logger.info("[General] {}".format(string))
+
+# -------------------------------------------------------------------------------
+    def cleanup(self):
+        if self._song_player is not None:
+            self._song_player.terminate()
+        if self._song_player_thread is not None:
+            self._song_player_thread.join()
 
 # -------------------------------------------------------------------------------
     def readline(self, **kwargs) -> bytes:
@@ -129,6 +170,18 @@ class PackingSerial(Serial):
             return bytes()
 
         return read
+
+    # -------------------------------------------------------------------------------
+    def _play_song_thread(self):
+        if self._song_player is None:
+            self._song_player = ThreadedSongPlayer(self)
+        elif self._song_player.is_running():
+            return
+
+        if self._song_player_thread is not None:
+            self._song_player_thread.join(timeout=1.0)
+        self._song_player_thread = Thread(target=self._song_player.run)
+        self._song_player_thread.start()
 
     # -------------------------------------------------------------------------------
     def get_transmission_stats(self) -> dict:
@@ -204,26 +257,7 @@ class PackingSerial(Serial):
             if self.play_song_on_print_complete:
                 if "M84" in data_str:
                     self._log("End of print detected, playing song...")
-                    lines = songplay.get_song_in_gcode()
-                    for line in lines:
-                        if use_packing:
-                            super().write(mp.pack_line(line))
-                        else:
-                            super().write(bytes(line, "UTF-8"))
-
-            # if "G28" in data_str:
-            #     self._log("Print start detected")
-            #     self._print_started = True
-            # if self._print_started:
-            #     if "M84" in data_str:
-            #         self._log("End of print detected")
-            #         self._print_started = False
-            #         if self.play_song_on_print_complete:
-            #             self._log("Playing song...")
-            #             if use_packing:
-            #                 super().write(mp.pack_multiline_string(songplay.get_song_in_gcode()))
-            #             else:
-            #                 super().write(bytes(songplay.get_song_in_gcode(), "UTF-8"))
+                    self._play_song_thread()
 
         return total_bytes
 

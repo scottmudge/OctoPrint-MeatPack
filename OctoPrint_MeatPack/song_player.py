@@ -1,8 +1,3 @@
-LowFreq = 988
-HighFreq = 1318
-
-
-
 BaseNotes = {
     "C": 32.70,
     "D": 36.71,
@@ -12,7 +7,6 @@ BaseNotes = {
     "A": 55.00,
     "B": 61.74
 }
-
 
 
 def get_note_freq(note: str, octave: int) -> int:
@@ -25,7 +19,6 @@ QuarterNote = int(round(EightNote * 2.0))
 HalfNote = int(round(QuarterNote * 2.0))
 FullNote = int(round(HalfNote * 2.0))
 OctaveShift = 0
-
 
 
 MeatBallSongNotes = (
@@ -70,12 +63,10 @@ def get_note_str(freq: int, length: int):
 
 def get_song_in_gcode() -> list:
     out = list()
-
     for note in MeatBallSongNotes:
         note_str: str = note[0]
         note_oct: int = note[1]
         note_len: int = note[2]
-        note_freq = get_note_freq(note_str, note_oct + OctaveShift)
-        out.append(get_note_str(note_freq, note_len))
+        out.append((note_len, get_note_str(get_note_freq(note_str, (note_oct + OctaveShift)), note_len)))
     return out
 

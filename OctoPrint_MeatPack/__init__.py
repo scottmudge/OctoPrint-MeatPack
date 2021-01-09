@@ -19,7 +19,8 @@ class MeatPackPlugin(
     octoprint.plugin.StartupPlugin,
     octoprint.plugin.TemplatePlugin,
     octoprint.plugin.AssetPlugin,
-    octoprint.plugin.SimpleApiPlugin
+    octoprint.plugin.SimpleApiPlugin,
+    octoprint.plugin.ShutdownPlugin
 ):
     """MeatPack plugin - provides various utilities for custom Prusa Firmware.
 
@@ -97,6 +98,11 @@ class MeatPackPlugin(
 # -------------------------------------------------------------------------------
     def on_settings_migrate(self, target, current=None):
         return
+
+# -------------------------------------------------------------------------------
+    def on_shutdown(self):
+        if self._serial_obj is not None:
+            self._serial_obj.cleanup()
 
 # -------------------------------------------------------------------------------
     def create_serial_obj(self):
