@@ -1,14 +1,14 @@
 # OctoPrint-MeatPack
 Getting to the **meat** of g-code. A real-time, CPU-easy, gcode compression/packing algorithm developed by Scott Mudge
 
-## Current Features
+## Current Features (v1.2.6)
 
 
 1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. Please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
 ![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
 This can be disabled in the plugin options page.
-3. Added an optional feature (can be disabled in plugin settings) to play a "Mario coin" noise on the printer after a print is completed.
+3. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
 
 ## NOTE: To use MeatPack, please install a compatible version of the Prusa firmware here:
 
@@ -26,7 +26,7 @@ MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Fir
 
 2. After activating the OctoPrint environment, run the following command:
 
-`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.2.0.zip`
+`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.2.6.zip`
 
 3. Restart your OctoPrint server, or restart the machine.
 
