@@ -48,6 +48,8 @@ class PackingSerial(Serial):
     """
 
     def __init__(self, logger, **kwargs):
+        mp.initialize()
+
         self._packing_enabled = True
         self._expecting_response = False
         self._confirmed_sync = False

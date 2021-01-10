@@ -1,24 +1,10 @@
 # Core MeatPack methods
 # Packs a data stream, byte by byte
+from array import array
 
-MeatPackLookupTbl = [
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '.',
-    ' ',
-    '\n',
-    'G',
-    'X',
-    '\0'  # never used, 0b1111 is used to indicate next 8-bits is a full character
-]
+# For faster lookup and access
+MeatPackLookupTablePackable = array('B', 256 * [0])
+MeatPackLookupTableValue = array('b', 256 * [0])
 
 MeatPackReverseLookupTbl = {
     '0': 0b00000000,
@@ -38,6 +24,26 @@ MeatPackReverseLookupTbl = {
     'X': 0b00001110,
     '\0': 0b00001111  # never used, 0b1111 is used to indicate next 8-bits is a full character
 }
+
+
+ArraysInitialized = False
+
+
+def initialize_arrays():
+    global ArraysInitialized
+    global MeatPackLookupTablePackable
+    global MeatPackLookupTableValue
+
+    for i in range (0, 255):
+        MeatPackLookupTablePackable[i] = MeatPackLookupTableValue[i] = 0
+
+    if not ArraysInitialized:
+        for char, value in MeatPackReverseLookupTbl:
+            c = ord(char)
+            MeatPackLookupTablePackable[c] = 1
+            MeatPackLookupTableValue[c] = value
+
+    ArraysInitialized = True
 
 
 """
@@ -62,15 +68,18 @@ MeatPack_BothUnpackable = 0b11111111
 
 
 # -------------------------------------------------------------------------------
+def initialize():
+    initialize_arrays()
+
+
+# -------------------------------------------------------------------------------
 def pack_chars(low: str, high: str) -> int:
-    return int(((MeatPackReverseLookupTbl[high] & 0xF) << 4) | (MeatPackReverseLookupTbl[low] & 0xF))
+    return int(((MeatPackLookupTableValue[ord(high)] & 0xF) << 4) | (MeatPackLookupTableValue[ord(low)] & 0xF))
 
 
 # -------------------------------------------------------------------------------
 def is_packable(char) -> bool:
-    if char in MeatPackReverseLookupTbl:
-        return True
-    return False
+    return False if MeatPackLookupTablePackable[ord(char)] == 0 else True
 
 
 # -------------------------------------------------------------------------------
@@ -88,13 +97,13 @@ def pack_line(line: str) -> bytearray:
 
     if line[0] == ';':
         return bts
-    if line[0] == '\n':
+    elif line[0] == '\n':
         return bts
-    if line[0] == '\r':
+    elif line[0] == '\r':
         return bts
-    if len(line) < 2:
+    elif len(line) < 2:
         return bts
-    if ';' in line:
+    elif ';' in line:
         line = line.split(';')[0].rstrip() + "\n"
     line_len = len(line)
 
