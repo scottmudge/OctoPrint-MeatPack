@@ -38,7 +38,7 @@ def initialize_arrays():
         MeatPackLookupTablePackable[i] = MeatPackLookupTableValue[i] = 0
 
     if not ArraysInitialized:
-        for char, value in MeatPackReverseLookupTbl:
+        for char, value in MeatPackReverseLookupTbl.items():
             c = ord(char)
             MeatPackLookupTablePackable[c] = 1
             MeatPackLookupTableValue[c] = value
