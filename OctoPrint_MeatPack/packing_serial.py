@@ -124,7 +124,8 @@ class PackingSerial(Serial):
 # -------------------------------------------------------------------------------
     def readline(self, **kwargs) -> bytes:
         read = super().readline(**kwargs)
-        str = read.decode("UTF-8", errors="ignore")
+
+        str = read.decode("UTF-8")
 
         # Reset
         if "start" in str:
