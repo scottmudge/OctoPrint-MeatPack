@@ -4,7 +4,7 @@ from array import array
 
 # For faster lookup and access
 MeatPackLookupTablePackable = array('B', 256 * [0])
-MeatPackLookupTableValue = array('b', 256 * [0])
+MeatPackLookupTableValue = array('B', 256 * [0])
 
 MeatPackReverseLookupTbl = {
     '0': 0b00000000,
