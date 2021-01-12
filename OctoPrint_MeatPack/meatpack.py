@@ -34,16 +34,16 @@ def initialize_arrays():
     global MeatPackLookupTablePackable
     global MeatPackLookupTableValue
 
-    for i in range (0, 255):
-        MeatPackLookupTablePackable[i] = MeatPackLookupTableValue[i] = 0
-
     if not ArraysInitialized:
+        for i in range (0, 255):
+            MeatPackLookupTablePackable[i] = MeatPackLookupTableValue[i] = 0
+    
         for char, value in MeatPackReverseLookupTbl.items():
             c = ord(char)
             MeatPackLookupTablePackable[c] = 1
             MeatPackLookupTableValue[c] = value
 
-    ArraysInitialized = True
+        ArraysInitialized = True
 
 
 """
