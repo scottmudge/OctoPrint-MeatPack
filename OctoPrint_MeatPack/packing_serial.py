@@ -338,11 +338,21 @@ class PackingSerial(Serial):
         if self._stable_state():
             if len(self._buffer) > 0:
                 for line in self._buffer:
-                    if self._packing_enabled:
-                        super().write(mp.pack_line(line.decode("UTF-8")))
-                    else:
-                        super().write(line)
+                    super().write(self._process_line_bytes(line))
                 self._buffer.clear()
+
+# -------------------------------------------------------------------------------
+    def _process_line_bytes(self, line: bytes):
+        if not self._packing_enabled:
+            return line
+        str_line = line.decode("UTF-8")
+        if self._no_spaces:
+            str_line = str_line.replace(' ', '')
+        if self.play_song_on_print_complete:
+            if "M84" in str_line:
+                self._log("End of print detected, playing song...")
+                self._play_song_thread()
+        return mp.pack_line(str_line)
 
 # -------------------------------------------------------------------------------
     def write(self, data):
@@ -355,23 +365,11 @@ class PackingSerial(Serial):
         else:
             self._flush_buffer()
 
-            data_str = data.decode("UTF-8")
-
-            if self._packing_enabled:
-                data_out = mp.pack_line(data_str)
-            else:
-                data_out = data
-
+            data_out = self._process_line_bytes(data)
             super().write(data_out)
             actual_bytes = len(data_out)
 
             self._benchmark_write_speed(actual_bytes, total_bytes)
-
-            if self.play_song_on_print_complete:
-                if "M84" in data_str:
-                    self._log("End of print detected, playing song...")
-                    self._play_song_thread()
-
         return total_bytes
 
 # -------------------------------------------------------------------------------
