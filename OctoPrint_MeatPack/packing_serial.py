@@ -352,6 +352,8 @@ class PackingSerial(Serial):
             if "M84" in str_line:
                 self._log("End of print detected, playing song...")
                 self._play_song_thread()
+
+        self._log("Actual sent data: {}".format(str_line))
         return mp.pack_line(str_line)
 
 # -------------------------------------------------------------------------------
