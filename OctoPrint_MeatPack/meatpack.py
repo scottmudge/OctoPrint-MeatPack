@@ -54,16 +54,17 @@ Command Words:
 Operation: send command word (0xFF 0xFF), send command byte, send close byte (0xFF)
 """
 
-Command_TogglePacking = 0b11111101
-Command_PackingEnable = 0b11111011
-Command_PackingDisable = 0b11111010
-Command_ResetDeviceState = 0b11111001
-Command_QueryPackingState = 0b11111000
-Command_None = 0b00000000
+MPCommand_None              = 0
+MPCommand_TogglePacking     = 253
+MPCommand_EnablePacking     = 251
+MPCommand_DisablePacking    = 250
+MPCommand_ResetAll          = 249
+MPCommand_QueryConfig       = 248
+MPCommand_EnableNoSpaces    = 247
+MPCommand_DisableNoSpaces   = 246
+MPCommand_SignalByte        = 0xFF
 
-CommandByte = 0b11111111
 
-MeatPack_FirstUnpackable = 0b00001111
 MeatPack_BothUnpackable = 0b11111111
 
 
@@ -85,8 +86,8 @@ def is_packable(char) -> bool:
 # -------------------------------------------------------------------------------
 def get_command_bytes(command) -> bytearray:
     out = bytearray()
-    out.append(CommandByte)
-    out.append(CommandByte)
+    out.append(MPCommand_SignalByte)
+    out.append(MPCommand_SignalByte)
     out.append(command)
     return out
 
@@ -166,16 +167,16 @@ def pack_file(in_filename: str, out_filename: str):
 
     bts = bytearray()
 
-    bts.append(CommandByte)
-    bts.append(CommandByte)
-    bts.append(Command_PackingEnable)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_EnablePacking)
 
     for line in file_data_lines:
         bts += pack_line(line)
 
-    bts.append(CommandByte)
-    bts.append(CommandByte)
-    bts.append(Command_ResetDeviceState)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_ResetAll)
 
     out_file.write(bts)
     out_file.flush()

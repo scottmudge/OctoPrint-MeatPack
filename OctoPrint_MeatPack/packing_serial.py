@@ -3,6 +3,14 @@ import OctoPrint_MeatPack.meatpack as mp
 import OctoPrint_MeatPack.song_player as songplay
 from threading import Thread
 import time
+import re
+import enum
+from array import array
+
+
+class MPSyncedConfigFlags(enum.IntEnum):
+    Enabled = 0
+    NoSpaces = 1
 
 
 class ThreadedSongPlayer:
@@ -51,16 +59,17 @@ class PackingSerial(Serial):
         mp.initialize()
 
         self._packing_enabled = True
+        self._no_spaces = False
         self._expecting_response = False
         self._confirmed_sync = False
-        self._device_packing_enabled = False
         self._sync_pending = False
-        self._confirm_sync_timer = time.time()
+        self._query_msg_timer = time.time()
         self._logger = logger
         self._log_transmission_stats: bool = True
         self.play_song_on_print_complete: bool = True
         self._print_started = False
         self._home_detected = False
+        self._protocol_version: int = 0
 
         self._diagTimer = time.time()
         self._diagBytesSentActualTotal = 0
@@ -74,10 +83,14 @@ class PackingSerial(Serial):
         self._totalKBSec = 0.0
 
         self.statsUpdateCallback = None
+        self._already_initialized = False
 
         self._buffer = list()
         self._song_player: ThreadedSongPlayer = None
         self._song_player_thread: Thread = None
+
+        self._config_sync_flags = array('B', len(MPSyncedConfigFlags) * [0])
+        self._reset_config_sync_state()
 
         super().__init__(**kwargs)
 
@@ -88,8 +101,22 @@ class PackingSerial(Serial):
 
     @packing_enabled.setter
     def packing_enabled(self, value: bool):
+        # Set before anything else, to buffer data while state is synchronized.
+        self._sync_pending = True
         self._packing_enabled = value
-        self.query_packing_state()
+        self.query_config_state(True)
+
+# -------------------------------------------------------------------------------
+    @property
+    def omit_all_spaces(self):
+        return self._no_spaces
+
+    @omit_all_spaces.setter
+    def omit_all_spaces(self, value: bool):
+        # Set before anything else, to buffer data while state is synchronized.
+        self._sync_pending = True
+        self._no_spaces = value
+        self.query_config_state(True)
 
 # -------------------------------------------------------------------------------
     @property
@@ -122,6 +149,26 @@ class PackingSerial(Serial):
             self._song_player_thread.join()
 
 # -------------------------------------------------------------------------------
+    def _update_config_sync_state(self):
+        all_synced = True
+        for i in range(0, len(MPSyncedConfigFlags)):
+            if self._config_sync_flags[i] == 0:
+                all_synced = False
+        self._confirmed_sync = all_synced
+
+# -------------------------------------------------------------------------------
+    def _reset_config_sync_state(self):
+        self._confirmed_sync = False
+        for i in range(0, len(MPSyncedConfigFlags)):
+            self._config_sync_flags[i] = 0
+
+# -------------------------------------------------------------------------------
+    def _stable_state(self) -> bool:
+        if not self._sync_pending and self._confirmed_sync:
+            return True
+        return False
+
+# -------------------------------------------------------------------------------
     def readline(self, **kwargs) -> bytes:
         read = super().readline(**kwargs)
 
@@ -129,47 +176,97 @@ class PackingSerial(Serial):
 
         # Reset
         if "start" in str:
-            self._confirmed_sync = False
-            self._log("System reset detected -- disabling meatpack until sync.")
+            self._reset_config_sync_state()
+            self._log("System reset detected -- disabling MeatPack until sync.")
             return read
 
+        # Keep sending queries every so often until response (timed internally)
         if not self._confirmed_sync:
-            self.query_packing_state()
+            self.query_config_state()
 
         # Sync packing state
+        # -------------------------------------------------------------------------------
         if "[MP]" in str:
 
+            # Extract protocol version
+            # -------------------------------------------------------------------------------
+            if " PV" in str:
+                protocol_match = re.search(" PV(\d+)", str)
+                if protocol_match:
+                    new_version = int(protocol_match.group(1))
+
+                    if new_version != self._protocol_version:
+                        self._log("Detected MeatPack protocol version V{}".format(new_version))
+                    self._protocol_version = int(protocol_match.group(1))
+
+
+            # Enable/Disable flag is available in all protocl versions
+            # -------------------------------------------------------------------------------
             # If device packing is on but we want it off, do so here.
             if " ON" in str:
+                # We don't want it enabled but it says it is
                 if not self._packing_enabled:
+                    self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 0
                     self._sync_pending = True
-                    super().write(mp.get_command_bytes(mp.Command_PackingDisable))
+                    super().write(mp.get_command_bytes(mp.MPCommand_DisablePacking))
                     super().flushOutput()
-                    self._log("MeatPack enabled on device but set to be disabled. Sync'ing state...")
+                    self._log("MeatPack enabled on device but will be set disabled. Sync'ing state.")
                     # Check again
-                    self.query_packing_state()
+                    self.query_config_state()
                 else:
-                    self._log("MeatPack state synchronized - ENABLED")
-                    self._device_packing_enabled = True
-                    self._sync_pending = False
-                    self._confirmed_sync = True
-                    self._flush_buffer()
+                    self._log("Config var [Enabled] synchronized (=enabled).")
+                    self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
 
             # If device packing is off but we want it on, do so here.
             elif " OFF" in str:
+                #We do want it enabled, but it says it isn't
                 if self._packing_enabled:
                     self._sync_pending = True
-                    super().write(mp.get_command_bytes(mp.Command_PackingEnable))
+                    super().write(mp.get_command_bytes(mp.MPCommand_EnablePacking))
                     super().flushOutput()
-                    self._log("MeatPack disabled on device but set to be enabled. Sync'ing state...")
+                    self._log("MeatPack disabled on device but will be set enabled. Sync'ing state.")
                     # Check again
-                    self.query_packing_state()
+                    self.query_config_state()
                 else:
-                    self._log("MeatPack state synchronized - DISABLED")
-                    self._confirmed_sync = True
-                    self._sync_pending = False
-                    self._device_packing_enabled = False
-                    self._flush_buffer()
+                    self._log("Config var [Enabled] synchronized (=disabled).")
+                    self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
+
+        # No-Spaces is only available in protocl version 1 and above
+        # -------------------------------------------------------------------------------
+            if self._protocol_version >= 1:
+                # No spaces enabled
+                if " NSP" in str:
+                    # Need to disable it
+                    if not self._no_spaces:
+                        self._sync_pending = True
+                        super().write(mp.get_command_bytes(mp.MPCommand_DisableNoSpaces))
+                        super().flushOutput()
+                        self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
+                        self.query_config_state()
+                    # Otherwise we're good
+                    else:
+                        self._log("Config var [NoSpaces] synchronized (=enabled).")
+                        self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
+                # No spaces disabled
+                elif " ESP" in str:
+                    # Need to enabled it
+                    if self._no_spaces:
+                        self._sync_pending = True
+                        super().write(mp.get_command_bytes(mp.MPCommand_EnableNoSpaces))
+                        super().flushOutput()
+                        self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
+                        self.query_config_state()
+                    # Otherwise we're good
+                    else:
+                        self._log("Config var [NoSpaces] synchronized (=disabled).")
+                        self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
+
+            self._update_config_sync_state()
+            if self._confirmed_sync:
+                self._sync_pending = False
+                self._flush_buffer()
+                # This flag is used to prevent a rush of query messages at first launch.
+                self._already_initialized = True
 
             return bytes()
 
@@ -224,10 +321,10 @@ class PackingSerial(Serial):
 
 # -------------------------------------------------------------------------------
     def _flush_buffer(self):
-        if not self._sync_pending and self._confirmed_sync:
+        if self._stable_state():
             if len(self._buffer) > 0:
                 for line in self._buffer:
-                    if self._device_packing_enabled and self._packing_enabled:
+                    if self._packing_enabled:
                         super().write(mp.pack_line(line.decode("UTF-8")))
                     else:
                         super().write(line)
@@ -239,16 +336,14 @@ class PackingSerial(Serial):
         # complete
         total_bytes = len(data)
 
-        if not self._confirmed_sync or self._sync_pending:
+        if not self._stable_state():
             self._buffer.append(data)
         else:
             self._flush_buffer()
 
-            use_packing = True if (self._device_packing_enabled and self._packing_enabled) else False
-
             data_str = data.decode("UTF-8")
 
-            if use_packing:
+            if self._packing_enabled:
                 data_out = mp.pack_line(data_str)
             else:
                 data_out = data
@@ -266,15 +361,21 @@ class PackingSerial(Serial):
         return total_bytes
 
 # -------------------------------------------------------------------------------
-    def query_packing_state(self):
+    def query_config_state(self, force: bool = False):
         """Queries the packing state from the system. Sends command and awaits response"""
         if self.isOpen():
+
+            # This is used to prevent too many query messages from going out at once
             if self._expecting_response:
-                if time.time() - self._confirm_sync_timer < 3.0:
+                time_limit = 0.6 if self._already_initialized else 3.0
+                if force:
+                    time_limit = 0.25
+                if time.time() - self._query_msg_timer < time_limit:
                     return
-            self._confirm_sync_timer = time.time()
-            self._confirmed_sync = False
-            super().write(mp.get_command_bytes(mp.Command_QueryPackingState))
+
+            self._query_msg_timer = time.time()
+            self._reset_config_sync_state()
+            super().write(mp.get_command_bytes(mp.MPCommand_QueryConfig))
             self.flushOutput()
             self._expecting_response = True
         else:

@@ -66,7 +66,7 @@ class MeatPackPlugin(
             # noinspection PyProtectedMember
             set_close_exec(self._serial_obj._port_handle)
 
-        self._serial_obj.query_packing_state()
+        self._serial_obj.query_config_state()
 
         return self._serial_obj
 
@@ -82,6 +82,7 @@ class MeatPackPlugin(
             enableMeatPack=True,
             logTransmissionStats=True,
             playSongOnPrintComplete=False,
+            omitSpaces=False
         )
 
 # -------------------------------------------------------------------------------
