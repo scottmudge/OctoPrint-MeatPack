@@ -90,6 +90,8 @@ class PackingSerial(Serial):
         self._song_player_thread: Thread = None
 
         self._config_sync_flags = array('B', len(MPSyncedConfigFlags) * [0])
+        self._config_sync_flags_protocol_ver = array('B', len(MPSyncedConfigFlags) * [0])
+        self._init_device_config_protocl_versions()
         self._reset_config_sync_state()
 
         super().__init__(**kwargs)
@@ -134,6 +136,11 @@ class PackingSerial(Serial):
             self._diagTimer = time.time()
 
 # -------------------------------------------------------------------------------
+    def _init_device_config_protocl_versions(self):
+        self._config_sync_flags_protocol_ver[MPSyncedConfigFlags.Enabled] = 0
+        self._config_sync_flags_protocol_ver[MPSyncedConfigFlags.NoSpaces] = 1
+
+# -------------------------------------------------------------------------------
     def _log(self, string):
         self._logger.info("[Serial]: {}".format(string))
 
@@ -152,7 +159,8 @@ class PackingSerial(Serial):
     def _update_config_sync_state(self):
         all_synced = True
         for i in range(0, len(MPSyncedConfigFlags)):
-            if self._config_sync_flags[i] == 0:
+            if self._config_sync_flags[i] == 0 and\
+                    int(self._config_sync_flags_protocol_ver[i]) <= self._protocol_version:
                 all_synced = False
         self._confirmed_sync = all_synced
 
