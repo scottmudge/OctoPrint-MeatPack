@@ -180,10 +180,10 @@ class PackingSerial(Serial):
     def readline(self, **kwargs) -> bytes:
         read = super().readline(**kwargs)
 
-        str = read.decode("UTF-8")
+        read_str = read.decode("UTF-8")
 
         # Reset
-        if "start" in str:
+        if "start" in read_str:
             self._reset_config_sync_state()
             self._log("System reset detected -- disabling MeatPack until sync.")
             return read
@@ -194,12 +194,12 @@ class PackingSerial(Serial):
 
         # Sync packing state
         # -------------------------------------------------------------------------------
-        if "[MP]" in str:
+        if "[MP]" in read_str:
 
             # Extract protocol version
             # -------------------------------------------------------------------------------
-            if " PV" in str:
-                protocol_match = re.search(" PV(\d+)", str)
+            if " PV" in read_str:
+                protocol_match = re.search(" PV(\d+)", read_str)
                 if protocol_match:
                     new_version = int(protocol_match.group(1))
 
@@ -207,18 +207,20 @@ class PackingSerial(Serial):
                         self._log("Detected MeatPack protocol version V{}".format(new_version))
                     self._protocol_version = int(protocol_match.group(1))
 
+            sync_pending_buf = self._sync_pending
 
             # Enable/Disable flag is available in all protocl versions
             # -------------------------------------------------------------------------------
             # If device packing is on but we want it off, do so here.
-            if " ON" in str:
+            if " ON" in read_str:
                 # We don't want it enabled but it says it is
                 if not self._packing_enabled:
                     self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 0
                     self._sync_pending = True
                     super().write(mp.get_command_bytes(mp.MPCommand_DisablePacking))
                     super().flushOutput()
-                    self._log("MeatPack enabled on device but will be set disabled. Sync'ing state.")
+                    if not sync_pending_buf:
+                        self._log("MeatPack enabled on device but will be set disabled. Sync'ing state.")
                     # Check again
                     self.query_config_state()
                 else:
@@ -226,13 +228,14 @@ class PackingSerial(Serial):
                     self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
 
             # If device packing is off but we want it on, do so here.
-            elif " OFF" in str:
-                #We do want it enabled, but it says it isn't
+            elif " OFF" in read_str:
+                # We do want it enabled, but it says it isn't
                 if self._packing_enabled:
                     self._sync_pending = True
                     super().write(mp.get_command_bytes(mp.MPCommand_EnablePacking))
                     super().flushOutput()
-                    self._log("MeatPack disabled on device but will be set enabled. Sync'ing state.")
+                    if not sync_pending_buf:
+                        self._log("MeatPack disabled on device but will be set enabled. Sync'ing state.")
                     # Check again
                     self.query_config_state()
                 else:
@@ -243,26 +246,28 @@ class PackingSerial(Serial):
         # -------------------------------------------------------------------------------
             if self._protocol_version >= 1:
                 # No spaces enabled
-                if " NSP" in str:
+                if " NSP" in read_str:
                     # Need to disable it
                     if not self._no_spaces:
                         self._sync_pending = True
                         super().write(mp.get_command_bytes(mp.MPCommand_DisableNoSpaces))
                         super().flushOutput()
-                        self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
+                        if not sync_pending_buf:
+                            self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
                         self.query_config_state()
                     # Otherwise we're good
                     else:
                         self._log("Config var [NoSpaces] synchronized (=enabled).")
                         self._config_sync_flags[MPSyncedConfigFlags.NoSpaces] = 1
                 # No spaces disabled
-                elif " ESP" in str:
+                elif " ESP" in read_str:
                     # Need to enabled it
                     if self._no_spaces:
                         self._sync_pending = True
                         super().write(mp.get_command_bytes(mp.MPCommand_EnableNoSpaces))
                         super().flushOutput()
-                        self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
+                        if not sync_pending_buf:
+                            self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
                         self.query_config_state()
                     # Otherwise we're good
                     else:
