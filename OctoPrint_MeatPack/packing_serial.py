@@ -254,7 +254,7 @@ class PackingSerial(Serial):
                     # Otherwise we're good
                     else:
                         self._log("Config var [NoSpaces] synchronized (=enabled).")
-                        self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
+                        self._config_sync_flags[MPSyncedConfigFlags.NoSpaces] = 1
                 # No spaces disabled
                 elif " ESP" in str:
                     # Need to enabled it
@@ -267,10 +267,11 @@ class PackingSerial(Serial):
                     # Otherwise we're good
                     else:
                         self._log("Config var [NoSpaces] synchronized (=disabled).")
-                        self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
+                        self._config_sync_flags[MPSyncedConfigFlags.NoSpaces] = 1
 
             self._update_config_sync_state()
             if self._confirmed_sync:
+                self._log("MeatPack configuration successfully synchronized and confirmed between host/device.")
                 self._sync_pending = False
                 self._flush_buffer()
                 # This flag is used to prevent a rush of query messages at first launch.
