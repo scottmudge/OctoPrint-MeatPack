@@ -135,8 +135,8 @@ def _recompute_checksum(in_str: str) -> str:
 
     checksum = 0
     stripped = in_str.partition('*')[0].replace(' ', '')
-    for c in bytearray(stripped, "ascii"):
-        checksum ^= c
+    for i,v in enumerate(stripped):
+        checksum ^= ord(v)
     return stripped + "*" + chr(checksum)
 
 
