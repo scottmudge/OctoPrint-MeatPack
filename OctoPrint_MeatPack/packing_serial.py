@@ -367,7 +367,7 @@ class PackingSerial(Serial):
         else:
             self._flush_buffer()
 
-            data_out = self._process_line_bytes(data, self._logger)
+            data_out = self._process_line_bytes(data)
             super().write(data_out)
             actual_bytes = len(data_out)
 
