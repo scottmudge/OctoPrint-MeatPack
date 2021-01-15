@@ -130,15 +130,17 @@ def _recompute_checksum(in_str: str) -> str:
            ^            ^          ^      ^
          Line No     Commands   asterisk   single byte
     """
-    if not MeatPackOmitWhitespaces or '*' not in in_str or True:
+    if not MeatPackOmitWhitespaces:
         return in_str
 
-    checksum = 0
-    stripped = in_str.partition('*')[0]
-    stripped = stripped.replace(' ', '')
-    for i, v in enumerate(stripped):
-        checksum ^= ord(v)
-    return stripped + "*" + str(checksum)
+    stripped = in_str.replace(' ', '')
+    if '*' in in_str:
+        checksum = 0
+        stripped = stripped.partition('*')[0]
+        for i, v in enumerate(stripped):
+            checksum ^= ord(v)
+        return stripped + "*" + str(checksum)
+    return stripped
 
 
 # -------------------------------------------------------------------------------
