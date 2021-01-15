@@ -155,7 +155,12 @@ def pack_line(line: str, logger: None) -> bytearray:
     elif ';' in line:
         line = line.split(';')[0].rstrip() + "\n"
 
-    proc_line = _recompute_checksum(line)
+    #proc_line = _recompute_checksum(line)
+    if MeatPackOmitWhitespaces:
+        proc_line = line.partition('*')[0].replace(' ', '')
+    else:
+        proc_line = line
+
     if logger:
         logger.info("[Test]: String being sent: {}".format(proc_line))
 
@@ -171,11 +176,7 @@ def pack_line(line: str, logger: None) -> bytearray:
             # Need to fill char 2 with some kind character, as we don't know whats on the next line.
             # Using a space gets replaced w/ a new character when white space is omitted, so new line is
             # the only other benign character.
-            if MeatPackOmitWhitespaces:
-                char_2 = '\n'
-            else:
-                char_2 = char_1
-                char_1 = ' '
+            char_2 = '\n'
         else:
             char_2 = proc_line[line_idx + 1]
 
