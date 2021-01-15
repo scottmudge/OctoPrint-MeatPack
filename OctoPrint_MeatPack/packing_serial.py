@@ -352,7 +352,7 @@ class PackingSerial(Serial):
                 self._log("End of print detected, playing song...")
                 self._play_song_thread()
 
-        return mp.pack_line(str_line, self._logger)
+        return mp.pack_line(str_line)
 
 # -------------------------------------------------------------------------------
     def write(self, data):

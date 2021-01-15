@@ -137,11 +137,11 @@ def _recompute_checksum(in_str: str) -> str:
     stripped = in_str.partition('*')[0].replace(' ', '')
     for i,v in enumerate(stripped):
         checksum ^= ord(v)
-    return stripped + "*" + chr(checksum)
+    return stripped + "*" + str(checksum)
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str, logger: None) -> bytearray:
+def pack_line(line: str) -> bytearray:
     bts = bytearray()
 
     if line[0] == ';':
@@ -158,8 +158,6 @@ def pack_line(line: str, logger: None) -> bytearray:
         proc_line = line
 
     proc_line = _recompute_checksum(proc_line)
-    if logger:
-        logger.info("[Test]: String being sent: {}".format(proc_line))
 
     line_len = len(proc_line)
 
