@@ -139,7 +139,7 @@ def _recompute_checksum(in_str: str) -> str:
         stripped = stripped.partition('*')[0]
         for i, v in enumerate(stripped):
             checksum ^= ord(v)
-        return stripped + "*" + str(checksum)
+        return stripped + "*" + str(checksum) + "\n"
     return stripped
 
 
