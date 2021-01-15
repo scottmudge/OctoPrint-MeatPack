@@ -7,6 +7,7 @@ MeatPackLookupTablePackable = array('B', 256 * [0])
 MeatPackLookupTableValue = array('B', 256 * [0])
 
 MeatPackSpaceReplacedCharacter = 'E'
+MeatPackOmitWhitespaces = False
 
 MeatPackReverseLookupTbl = {
     '0': 0b00000000,
@@ -87,6 +88,8 @@ def is_packable(char) -> bool:
 
 # -------------------------------------------------------------------------------
 def set_no_spaces(no_spaces: bool):
+    global MeatPackOmitWhitespaces
+    MeatPackOmitWhitespaces = no_spaces
     if no_spaces:
         MeatPackLookupTableValue[ord(MeatPackSpaceReplacedCharacter)] = MeatPackReverseLookupTbl[' ']
         MeatPackLookupTablePackable[ord(MeatPackSpaceReplacedCharacter)] = 1
@@ -128,8 +131,14 @@ def pack_line(line: str) -> bytearray:
 
         char_1 = line[line_idx]
         if skip_last:
-            char_2 = char_1
-            char_1 = ' '
+            # Need to fill char 2 with some kind character, as we don't know whats on the next line.
+            # Using a space gets replaced w/ a new character when white space is omitted, so new line is
+            # the only other benign character.
+            if MeatPackOmitWhitespaces:
+                char_2 = '\n'
+            else:
+                char_2 = char_1
+                char_1 = ' '
         else:
             char_2 = line[line_idx + 1]
 
