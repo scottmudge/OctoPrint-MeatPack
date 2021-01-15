@@ -157,12 +157,9 @@ def pack_line(line: str) -> bytearray:
             skip_last = True
 
         char_1 = line[line_idx]
-        if skip_last:
-            # This character is ignored. The last character in a line is a '\n', so if a '\n' character is detected
-            # in char_1, char_2 is ignored.
-            char_2 = '\n'
-        else:
-            char_2 = line[line_idx + 1]
+
+        # If we are at the last character and it needs to be skipped, pack a benign character like \n into it.
+        char_2 = '\n' if skip_last else line[line_idx + 1]
 
         c1_p = is_packable(char_1)
         c2_p = is_packable(char_2)

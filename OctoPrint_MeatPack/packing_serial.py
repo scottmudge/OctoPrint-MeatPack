@@ -240,6 +240,7 @@ class PackingSerial(Serial):
                     self.query_config_state()
                 else:
                     self._log("Config var [Enabled] synchronized (=disabled).")
+                    mp.set_no_spaces(self._no_spaces)
                     self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 1
 
         # No-Spaces is only available in protocl version 1 and above
@@ -272,6 +273,7 @@ class PackingSerial(Serial):
                     # Otherwise we're good
                     else:
                         self._log("Config var [NoSpaces] synchronized (=disabled).")
+                        mp.set_no_spaces(self._no_spaces)
                         self._config_sync_flags[MPSyncedConfigFlags.NoSpaces] = 1
 
             self._update_config_sync_state()
