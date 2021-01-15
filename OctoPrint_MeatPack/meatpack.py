@@ -134,8 +134,9 @@ def _recompute_checksum(in_str: str) -> str:
         return in_str
 
     checksum = 0
-    stripped = in_str.partition('*')[0].replace(' ', '')
-    for i,v in enumerate(stripped):
+    stripped = in_str.partition('*')[0]
+    stripped = stripped.replace(' ', '')
+    for i, v in enumerate(stripped):
         checksum ^= ord(v)
     return stripped + "*" + str(checksum)
 
@@ -155,26 +156,26 @@ def pack_line(line: str, logger: None) -> bytearray:
     elif ';' in line:
         line = line.split(';')[0].rstrip() + "\n"
 
-    proc_line = _recompute_checksum(line)
+    line = _recompute_checksum(line)
 
     if logger:
-        logger.info("[Test]: String being sent: {}".format(proc_line))
+        logger.info("[Test]: String being sent: {}".format(line))
 
-    line_len = len(proc_line)
+    line_len = len(line)
 
     for line_idx in range(0, line_len, 2):
         skip_last = False
         if line_idx == (line_len - 1):
             skip_last = True
 
-        char_1 = proc_line[line_idx]
+        char_1 = line[line_idx]
         if skip_last:
             # Need to fill char 2 with some kind character, as we don't know whats on the next line.
             # Using a space gets replaced w/ a new character when white space is omitted, so new line is
             # the only other benign character.
             char_2 = '\n'
         else:
-            char_2 = proc_line[line_idx + 1]
+            char_2 = line[line_idx + 1]
 
         c1_p = is_packable(char_1)
         c2_p = is_packable(char_2)
