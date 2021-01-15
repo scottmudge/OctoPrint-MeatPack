@@ -89,6 +89,10 @@ def is_packable(char) -> bool:
 # -------------------------------------------------------------------------------
 def set_no_spaces(no_spaces: bool):
     global MeatPackOmitWhitespaces
+    global MeatPackLookupTablePackable
+    global MeatPackLookupTableValue
+    global MeatPackReverseLookupTbl
+
     MeatPackOmitWhitespaces = no_spaces
     if no_spaces:
         MeatPackLookupTableValue[ord(MeatPackSpaceReplacedCharacter)] = MeatPackReverseLookupTbl[' ']
