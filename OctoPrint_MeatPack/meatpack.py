@@ -130,7 +130,7 @@ def _recompute_checksum(in_str: str) -> str:
            ^            ^          ^      ^
          Line No     Commands   asterisk   single byte
     """
-    if not MeatPackOmitWhitespaces or '*' not in in_str:
+    if not MeatPackOmitWhitespaces or '*' not in in_str or True:
         return in_str
 
     checksum = 0
@@ -153,11 +153,9 @@ def pack_line(line: str, logger: None) -> bytearray:
     elif len(line) < 2:
         return bts
     elif ';' in line:
-        proc_line = line.split(';')[0].rstrip() + "\n"
-    else:
-        proc_line = line
+        line = line.split(';')[0].rstrip() + "\n"
 
-    proc_line = _recompute_checksum(proc_line)
+    proc_line = _recompute_checksum(line)
     if logger:
         logger.info("[Test]: String being sent: {}".format(proc_line))
 
