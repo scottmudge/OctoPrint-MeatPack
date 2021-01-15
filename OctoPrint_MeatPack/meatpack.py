@@ -6,6 +6,8 @@ from array import array
 MeatPackLookupTablePackable = array('B', 256 * [0])
 MeatPackLookupTableValue = array('B', 256 * [0])
 
+MeatPackSpaceReplacedCharacter = 'E'
+
 MeatPackReverseLookupTbl = {
     '0': 0b00000000,
     '1': 0b00000001,
@@ -81,6 +83,17 @@ def pack_chars(low: str, high: str) -> int:
 # -------------------------------------------------------------------------------
 def is_packable(char) -> bool:
     return False if MeatPackLookupTablePackable[ord(char)] == 0 else True
+
+
+# -------------------------------------------------------------------------------
+def set_no_spaces(no_spaces: bool):
+    if no_spaces:
+        MeatPackLookupTableValue[ord(MeatPackSpaceReplacedCharacter)] = MeatPackReverseLookupTbl[' ']
+        MeatPackLookupTablePackable[ord(MeatPackSpaceReplacedCharacter)] = 1
+        MeatPackLookupTablePackable[ord(' ')] = 0
+    else:
+        MeatPackLookupTablePackable[ord(MeatPackSpaceReplacedCharacter)] = 0
+        MeatPackLookupTablePackable[ord(' ')] = 1
 
 
 # -------------------------------------------------------------------------------

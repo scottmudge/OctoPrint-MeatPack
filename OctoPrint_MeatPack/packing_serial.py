@@ -277,6 +277,7 @@ class PackingSerial(Serial):
             self._update_config_sync_state()
             if self._confirmed_sync:
                 self._log("MeatPack configuration successfully synchronized and confirmed between host/device.")
+                mp.set_no_spaces(self._no_spaces)
                 self._sync_pending = False
                 self._flush_buffer()
                 # This flag is used to prevent a rush of query messages at first launch.
@@ -353,7 +354,6 @@ class PackingSerial(Serial):
                 self._log("End of print detected, playing song...")
                 self._play_song_thread()
 
-        self._log("Actual sent data: {}".format(str_line))
         return mp.pack_line(str_line)
 
 # -------------------------------------------------------------------------------
