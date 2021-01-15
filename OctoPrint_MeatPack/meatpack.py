@@ -141,7 +141,7 @@ def _recompute_checksum(in_str: str) -> str:
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str) -> bytearray:
+def pack_line(line: str, logger: None) -> bytearray:
     bts = bytearray()
 
     if line[0] == ';':
@@ -158,6 +158,8 @@ def pack_line(line: str) -> bytearray:
         proc_line = line
 
     proc_line = _recompute_checksum(proc_line)
+    if logger:
+        logger.info("[Test]: String being sent: {}".format(proc_line))
 
     line_len = len(proc_line)
 
