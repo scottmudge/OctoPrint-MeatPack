@@ -109,6 +109,24 @@ def get_command_bytes(command) -> bytearray:
 
 
 # -------------------------------------------------------------------------------
+def _test_gcode(gcode: str) -> bool:
+    """Returns true if gcode shouldn't be stripped of whitespaces."""
+
+    # Just leave all "M" messages alone
+    if gcode[0] == 'M':
+        return True
+
+    # Update LCD message
+    # if "M117" in gcode:
+    #     return True
+    # # Update
+    # elif "M862" in gcode:
+    #     return True
+
+    return False
+
+
+# -------------------------------------------------------------------------------
 def _recompute_checksum(in_str: str) -> str:
     """
         Line Structure:
@@ -119,7 +137,7 @@ def _recompute_checksum(in_str: str) -> str:
            ^            ^          ^      ^
          Line No     Commands   asterisk   single byte
     """
-    if not MeatPackOmitWhitespaces:
+    if not MeatPackOmitWhitespaces or _test_gcode(in_str):
         return in_str
 
     stripped = in_str.replace(' ', '')
