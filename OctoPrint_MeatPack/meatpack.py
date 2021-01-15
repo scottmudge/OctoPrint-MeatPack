@@ -157,7 +157,7 @@ def pack_line(line: str, logger: None) -> bytearray:
 
     #proc_line = _recompute_checksum(line)
     if MeatPackOmitWhitespaces:
-        proc_line = line.partition('*')[0].replace(' ', '')
+        proc_line = line.replace(' ', '')
     else:
         proc_line = line
 
