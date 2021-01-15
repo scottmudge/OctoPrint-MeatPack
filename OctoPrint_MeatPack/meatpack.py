@@ -155,11 +155,7 @@ def pack_line(line: str, logger: None) -> bytearray:
     elif ';' in line:
         line = line.split(';')[0].rstrip() + "\n"
 
-    #proc_line = _recompute_checksum(line)
-    if MeatPackOmitWhitespaces:
-        proc_line = line.replace(' ', '')
-    else:
-        proc_line = line
+    proc_line = _recompute_checksum(line)
 
     if logger:
         logger.info("[Test]: String being sent: {}".format(proc_line))
