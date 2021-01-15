@@ -133,7 +133,7 @@ def _recompute_checksum(in_str: str) -> str:
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str) -> bytearray:
+def pack_line(line: str, logger = None) -> bytearray:
     bts = bytearray()
 
     if line[0] == ';':
@@ -148,6 +148,9 @@ def pack_line(line: str) -> bytearray:
         line = line.split(';')[0].rstrip() + "\n"
 
     line = _recompute_checksum(line)
+
+    if logger is not None:
+        logger.info("[MP_Debug] Outgoing string: {}".format(line))
 
     line_len = len(line)
 

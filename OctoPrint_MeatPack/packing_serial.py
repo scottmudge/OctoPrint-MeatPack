@@ -354,7 +354,7 @@ class PackingSerial(Serial):
                 self._log("End of print detected, playing song...")
                 self._play_song_thread()
 
-        return mp.pack_line(str_line)
+        return mp.pack_line(str_line, self._logger)
 
 # -------------------------------------------------------------------------------
     def write(self, data):
@@ -367,7 +367,7 @@ class PackingSerial(Serial):
         else:
             self._flush_buffer()
 
-            data_out = self._process_line_bytes(data)
+            data_out = self._process_line_bytes(data, self._logger)
             super().write(data_out)
             actual_bytes = len(data_out)
 
