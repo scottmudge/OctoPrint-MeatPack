@@ -347,8 +347,6 @@ class PackingSerial(Serial):
         if not self._packing_enabled:
             return line
         str_line = line.decode("UTF-8")
-        if self._no_spaces:
-            str_line = str_line.replace(' ', '')
         if self.play_song_on_print_complete:
             if "M84" in str_line:
                 self._log("End of print detected, playing song...")

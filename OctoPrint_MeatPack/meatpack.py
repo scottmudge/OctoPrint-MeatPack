@@ -108,6 +108,38 @@ def get_command_bytes(command) -> bytearray:
     return out
 
 
+"""
+    def _do_send_with_checksum(self, command, linenumber):
+        command_to_send = b"N" + str(linenumber).encode("ascii") + b" " + command
+        checksum = 0
+        for c in bytearray(command_to_send):
+            checksum ^= c
+        command_to_send = command_to_send + b"*" + str(checksum).encode("ascii")
+        self._do_send_without_checksum(command_to_send)
+"""
+
+
+# -------------------------------------------------------------------------------
+def _recompute_checksum(in_str: str) -> str:
+    """
+        Line Structure:
+
+            one space   no whitespace
+                \             \       \
+        N#####      <Commands>    '*'   '#'
+           ^            ^          ^      ^
+         Line No     Commands   asterisk   single byte
+    """
+    if not MeatPackOmitWhitespaces or '*' not in in_str:
+        return in_str
+
+    checksum = 0
+    stripped = in_str[:in_str.find('*')].replace(' ', '')
+    for c in bytearray(stripped):
+        checksum ^= c
+    return stripped + "*" + chr(checksum)
+
+
 # -------------------------------------------------------------------------------
 def pack_line(line: str) -> bytearray:
     bts = bytearray()
@@ -122,14 +154,17 @@ def pack_line(line: str) -> bytearray:
         return bts
     elif ';' in line:
         line = line.split(';')[0].rstrip() + "\n"
-    line_len = len(line)
+
+    proc_line = _recompute_checksum(line)
+
+    line_len = len(proc_line)
 
     for line_idx in range(0, line_len, 2):
         skip_last = False
         if line_idx == (line_len - 1):
             skip_last = True
 
-        char_1 = line[line_idx]
+        char_1 = proc_line[line_idx]
         if skip_last:
             # Need to fill char 2 with some kind character, as we don't know whats on the next line.
             # Using a space gets replaced w/ a new character when white space is omitted, so new line is
@@ -140,7 +175,7 @@ def pack_line(line: str) -> bytearray:
                 char_2 = char_1
                 char_1 = ' '
         else:
-            char_2 = line[line_idx + 1]
+            char_2 = proc_line[line_idx + 1]
 
         c1_p = is_packable(char_1)
         c2_p = is_packable(char_2)
