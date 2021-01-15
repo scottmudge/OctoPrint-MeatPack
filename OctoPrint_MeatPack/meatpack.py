@@ -141,7 +141,7 @@ def _recompute_checksum(in_str: str) -> str:
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str) -> bytearray:
+def pack_line(line: str, logger: None) -> bytearray:
     bts = bytearray()
 
     if line[0] == ';':
@@ -153,9 +153,13 @@ def pack_line(line: str) -> bytearray:
     elif len(line) < 2:
         return bts
     elif ';' in line:
-        line = line.split(';')[0].rstrip() + "\n"
+        proc_line = line.split(';')[0].rstrip() + "\n"
+    else:
+        proc_line = line
 
-    proc_line = _recompute_checksum(line)
+    proc_line = _recompute_checksum(proc_line)
+    if logger:
+        logger.info("[Test]: String being sent: {}".format(proc_line))
 
     line_len = len(proc_line)
 
