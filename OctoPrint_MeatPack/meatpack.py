@@ -134,7 +134,7 @@ def _recompute_checksum(in_str: str) -> str:
         return in_str
 
     checksum = 0
-    stripped = in_str[:in_str.find('*')].replace(' ', '')
+    stripped = in_str.partition('*')[0].replace(' ', '')
     for c in bytearray(stripped, "ascii"):
         checksum ^= c
     return stripped + "*" + chr(checksum)
