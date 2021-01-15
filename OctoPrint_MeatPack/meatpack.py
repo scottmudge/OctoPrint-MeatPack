@@ -108,17 +108,6 @@ def get_command_bytes(command) -> bytearray:
     return out
 
 
-"""
-    def _do_send_with_checksum(self, command, linenumber):
-        command_to_send = b"N" + str(linenumber).encode("ascii") + b" " + command
-        checksum = 0
-        for c in bytearray(command_to_send):
-            checksum ^= c
-        command_to_send = command_to_send + b"*" + str(checksum).encode("ascii")
-        self._do_send_without_checksum(command_to_send)
-"""
-
-
 # -------------------------------------------------------------------------------
 def _recompute_checksum(in_str: str) -> str:
     """
@@ -144,7 +133,7 @@ def _recompute_checksum(in_str: str) -> str:
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str, logger: None) -> bytearray:
+def pack_line(line: str) -> bytearray:
     bts = bytearray()
 
     if line[0] == ';':
@@ -160,9 +149,6 @@ def pack_line(line: str, logger: None) -> bytearray:
 
     line = _recompute_checksum(line)
 
-    if logger:
-        logger.info("[Test]: String being sent: {}".format(line))
-
     line_len = len(line)
 
     for line_idx in range(0, line_len, 2):
@@ -172,9 +158,8 @@ def pack_line(line: str, logger: None) -> bytearray:
 
         char_1 = line[line_idx]
         if skip_last:
-            # Need to fill char 2 with some kind character, as we don't know whats on the next line.
-            # Using a space gets replaced w/ a new character when white space is omitted, so new line is
-            # the only other benign character.
+            # This character is ignored. The last character in a line is a '\n', so if a '\n' character is detected
+            # in char_1, char_2 is ignored.
             char_2 = '\n'
         else:
             char_2 = line[line_idx + 1]
