@@ -112,8 +112,8 @@ def get_command_bytes(command) -> bytearray:
 def _test_gcode(gcode: str) -> bool:
     """Returns true if gcode shouldn't be stripped of whitespaces."""
 
-    # Just leave all "M" messages alone
-    if gcode[0] == 'M':
+    # if contains M-code, don't strip whitespace.
+    if gcode.find('M') >= 0:
         return True
 
     # Update LCD message
