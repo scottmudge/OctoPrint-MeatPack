@@ -181,6 +181,8 @@ def pack_line(line: str) -> bytearray:
         line = line.split(';')[0].rstrip() + "\n"
 
     if MeatPackOmitWhitespaces:
+        # We need to recompute checksum if the number of spaces is odd (removing an even amount
+        # won't change the checksum), but just in case we recompute it if we modify the string.
         line = _recompute_checksum(line)
 
     line_len = len(line)
