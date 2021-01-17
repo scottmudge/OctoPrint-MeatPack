@@ -113,21 +113,32 @@ def get_command_bytes(command) -> bytearray:
 
 
 # -------------------------------------------------------------------------------
-def _test_gcode(gcode: str) -> bool:
+def _test_to_keep_whitespace(gcode: str) -> bool:
     """Returns true if gcode shouldn't be stripped of whitespaces."""
 
-    # if contains M-code, don't strip whitespace.
-    if gcode.find('M') >= 0:
-        return True
+    """Notes:
+    
+        At first I tried manually checking codes that implicitly require whitespace.
+            E.g., M117, to update LCD status message.
+            
+            
+        Then I realized it would be safe to only allow conventional 'G' codes. However,
+        at least with Prusa FW 3.9.3 for MK3, removing whitespace for all 'G' commands
+        lead to performance problems.
+        
+        My final test was to limit whitespace removal to only a small subsect of the 'G'
+        commands, but the commands that make up >95% of the g-code files.
+    
+    """
 
-    # Update LCD message
-    # if "M117" in gcode:
-    #     return True
-    # # Update
-    # elif "M862" in gcode:
-    #     return True
+    idx = gcode.find('G')
+    if idx >= 0:
+        # First test if it's a single-digit "G' command, then test the second character
+        # to see if it is an ascii number.
+        if (gcode[idx + 2] == ' ') and (48 <= ord(gcode[idx + 1]) <= 57):
+            return False
 
-    return False
+    return True
 
 
 # -------------------------------------------------------------------------------
@@ -141,7 +152,7 @@ def _recompute_checksum(in_str: str) -> str:
            ^            ^          ^      ^
          Line No     Commands   asterisk   single byte
     """
-    if _test_gcode(in_str):
+    if _test_to_keep_whitespace(in_str):
         return in_str
 
     stripped = in_str.replace(' ', '')

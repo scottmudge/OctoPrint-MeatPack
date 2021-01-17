@@ -117,8 +117,7 @@ class PackingSerial(Serial):
     def omit_all_spaces(self, value: bool):
         # Set before anything else, to buffer data while state is synchronized.
         self._sync_pending = True
-        #self._no_spaces = value
-        self._no_spaces = False
+        self._no_spaces = value
         self.query_config_state(True)
 
 # -------------------------------------------------------------------------------
