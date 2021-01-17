@@ -166,7 +166,7 @@ def _recompute_checksum(in_str: str) -> str:
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str) -> bytearray:
+def pack_line(line: str, logger=None) -> bytearray:
     bts = bytearray()
 
     if line[0] == ';':
@@ -184,6 +184,9 @@ def pack_line(line: str) -> bytearray:
         # We need to recompute checksum if the number of spaces is odd (removing an even amount
         # won't change the checksum), but just in case we recompute it if we modify the string.
         line = _recompute_checksum(line)
+
+    if logger:
+        logger.info("[Test] Line sent: {}".format(line))
 
     line_len = len(line)
 
@@ -214,17 +217,6 @@ def pack_line(line: str) -> bytearray:
                 bts.append(MeatPack_BothUnpackable)
                 bts.append(ord(char_1))
                 bts.append(ord(char_2))
-
-    return bts
-
-
-# -------------------------------------------------------------------------------
-def pack_multiline_string(lines: str) -> bytearray:
-    bts = bytearray()
-
-    all_lines = lines.splitlines()
-    for line in all_lines:
-        bts += pack_line(line)
 
     return bts
 
