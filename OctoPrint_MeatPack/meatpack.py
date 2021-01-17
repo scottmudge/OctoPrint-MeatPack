@@ -91,11 +91,10 @@ def set_no_spaces(no_spaces: bool):
     global MeatPackOmitWhitespaces
     global MeatPackLookupTablePackable
     global MeatPackLookupTableValue
-    global MeatPackReverseLookupTbl
 
     MeatPackOmitWhitespaces = no_spaces
     if no_spaces:
-        MeatPackLookupTableValue[ord(MeatPackSpaceReplacedCharacter)] = MeatPackReverseLookupTbl[' ']
+        MeatPackLookupTableValue[ord(MeatPackSpaceReplacedCharacter)] = MeatPackReverseLookupTbl.get(' ')
         MeatPackLookupTablePackable[ord(MeatPackSpaceReplacedCharacter)] = 1
         MeatPackLookupTablePackable[ord(' ')] = 0
     else:
