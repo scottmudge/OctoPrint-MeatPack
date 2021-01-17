@@ -169,7 +169,7 @@ def pack_line(line: str) -> bytearray:
     elif ';' in line:
         line = line.split(';')[0].rstrip() + "\n"
 
-    if not MeatPackOmitWhitespaces:
+    if MeatPackOmitWhitespaces:
         line = _recompute_checksum(line)
 
     line_len = len(line)
