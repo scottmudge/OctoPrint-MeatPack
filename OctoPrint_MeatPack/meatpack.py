@@ -165,6 +165,24 @@ def _recompute_checksum(in_str: str) -> str:
 
 
 # -------------------------------------------------------------------------------
+def _ensure_text_case(line: str) -> str:
+    """Ensure that the line has proper case. Don't apply this to "M"/machine commands."""
+    
+    m_idx = line.find('M')
+    if m_idx >= 0:
+        # If character after is a number, return string unchanged
+        if (48 <= ord(gcode[m_idx + 1]) <= 57):
+            return line
+        
+    # If whitespace is omitted, also convert E. It's faster to chain them together like this
+    # then make a sepparate assignment/call to replace.
+    if MeatPackOmitWhitespaces:
+        return line.replace('e', 'E').replace('x', 'X').replace('g', 'G')
+    else:
+        return line.replace('x', 'X').replace('g', 'G')    
+
+
+# -------------------------------------------------------------------------------
 def pack_line(line: str, logger=None) -> bytearray:
     bts = bytearray()
 
@@ -178,6 +196,8 @@ def pack_line(line: str, logger=None) -> bytearray:
         return bts
     elif ';' in line:
         line = line.split(';')[0].rstrip() + "\n"
+
+    line = _ensure_text_case(line)
 
     if MeatPackOmitWhitespaces:
         # We need to recompute checksum if the number of spaces is odd (removing an even amount
