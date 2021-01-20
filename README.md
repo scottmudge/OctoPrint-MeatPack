@@ -112,7 +112,7 @@ Here is an example. Take the following "G1" command.
 
 `G1 X113.214 Y91.45 E1.3154`
 
-It is effectively as the following -- note that parnethetical groups (XX) are packed as a single byte:
+It is effectively packed as the following -- note that parnethetical groups (XX) are packed as a single byte:
 
 `(G1) ( X) (11) (3.) (21) (4 ) (9#)* (Y) (1.) (45) (# )* (E) (1.) (31) (54) (\n)`
 
