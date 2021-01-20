@@ -10,16 +10,16 @@ $(function() {
     function MeatPackViewModel(parameters) {
         var self = this;
 
-        var name_total = gettext("Total Tx");
+        var name_total = gettext("Effective TX");
         var text_total = gettext("Total transmitted data for lifetime of connection.");
 
-        var name_packed = gettext("Packed Tx");
+        var name_packed = gettext("Comp. TX");
         var text_packed = gettext("Total packed transmitted data for lifetime of connection.");
 
         var name_ratio = gettext("Comp. Ratio");
         var text_ratio = gettext("Current compression ratio.");
 
-        var name_txrate = gettext("TX Rate");
+        var name_txrate = gettext("Effective TX Rate");
         var text_txrate = gettext("Total avg data transmitted per second (5 second period).");
 
         var name_enabled = gettext("Packing State");

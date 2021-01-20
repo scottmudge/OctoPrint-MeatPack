@@ -6,6 +6,9 @@ from array import array
 MeatPackLookupTablePackable = array('B', 256 * [0])
 MeatPackLookupTableValue = array('B', 256 * [0])
 
+MeatPackSpaceReplacedCharacter = 'E'
+MeatPackOmitWhitespaces = False
+
 MeatPackReverseLookupTbl = {
     '0': 0b00000000,
     '1': 0b00000001,
@@ -54,16 +57,17 @@ Command Words:
 Operation: send command word (0xFF 0xFF), send command byte, send close byte (0xFF)
 """
 
-Command_TogglePacking = 0b11111101
-Command_PackingEnable = 0b11111011
-Command_PackingDisable = 0b11111010
-Command_ResetDeviceState = 0b11111001
-Command_QueryPackingState = 0b11111000
-Command_None = 0b00000000
+MPCommand_None              = 0
+MPCommand_TogglePacking     = 253
+MPCommand_EnablePacking     = 251
+MPCommand_DisablePacking    = 250
+MPCommand_ResetAll          = 249
+MPCommand_QueryConfig       = 248
+MPCommand_EnableNoSpaces    = 247
+MPCommand_DisableNoSpaces   = 246
+MPCommand_SignalByte        = 0xFF
 
-CommandByte = 0b11111111
 
-MeatPack_FirstUnpackable = 0b00001111
 MeatPack_BothUnpackable = 0b11111111
 
 
@@ -83,16 +87,134 @@ def is_packable(char) -> bool:
 
 
 # -------------------------------------------------------------------------------
+def set_no_spaces(no_spaces: bool):
+    global MeatPackOmitWhitespaces
+    global MeatPackLookupTablePackable
+    global MeatPackLookupTableValue
+
+    MeatPackOmitWhitespaces = no_spaces
+    if no_spaces:
+        MeatPackLookupTableValue[ord(MeatPackSpaceReplacedCharacter)] = MeatPackReverseLookupTbl.get(' ')
+        MeatPackLookupTablePackable[ord(MeatPackSpaceReplacedCharacter)] = 1
+        MeatPackLookupTablePackable[ord(' ')] = 0
+    else:
+        MeatPackLookupTablePackable[ord(MeatPackSpaceReplacedCharacter)] = 0
+        MeatPackLookupTablePackable[ord(' ')] = 1
+
+
+# -------------------------------------------------------------------------------
 def get_command_bytes(command) -> bytearray:
     out = bytearray()
-    out.append(CommandByte)
-    out.append(CommandByte)
+    out.append(MPCommand_SignalByte)
+    out.append(MPCommand_SignalByte)
     out.append(command)
     return out
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str) -> bytearray:
+# def _test_to_keep_whitespace(gcode: str) -> bool:
+#     """Returns true if gcode shouldn't be stripped of whitespaces."""
+#
+#     """Notes:
+#
+#         At first I tried manually checking codes that implicitly require whitespace.
+#             E.g., M117, to update LCD status message.
+#
+#
+#         Then I realized it would be safe to only allow conventional 'G' codes. However,
+#         at least with Prusa FW 3.9.3 for MK3, removing whitespace for all 'G' commands
+#         lead to performance problems.
+#
+#         My final test was to limit whitespace removal to only a small subsect of the 'G'
+#         commands, but the commands that make up >95% of the g-code files.
+#
+#     """
+#
+#     idx = gcode.find('G')
+#     if idx >= 0:
+#         # First test if it's a single-digit "G' command, then test the second character
+#         # to see if it is an ascii number.
+#         if (gcode[idx + 2] == ' ') and (48 <= ord(gcode[idx + 1]) <= 57):
+#             return False
+#
+#     return True
+
+
+# -------------------------------------------------------------------------------
+# def _recompute_checksum(in_str: str) -> str:
+#     """
+#         Line Structure:
+#
+#             one space   no whitespace
+#                 \             \       \
+#         N#####      <Commands>    '*'   '#'
+#            ^            ^          ^      ^
+#          Line No     Commands   asterisk   single byte
+#     """
+#     # if _test_to_keep_whitespace(in_str):
+#     #     return in_str
+#     #
+#     # stripped = in_str.replace(' ', '')
+#     # if '*' in in_str:
+#     #     checksum = 0
+#     #     stripped = stripped.partition('*')[0]
+#     #     for i, v in enumerate(stripped):
+#     #         checksum ^= ord(v)
+#     #     return stripped + "*" + str(checksum) + "\n"
+#     # return stripped
+
+
+# -------------------------------------------------------------------------------
+# def _ensure_text_case(line: str) -> str:
+#     """Ensure that the line has proper case. Don't apply this to "M"/machine commands."""
+#
+#     m_idx = line.find('M')
+#     if m_idx >= 0:
+#         # If character after is a number, return string unchanged
+#         if 48 <= ord(line[m_idx + 1]) <= 57:
+#             return line
+#
+#     # If whitespace is omitted, also convert E. It's faster to chain them together like this
+#     # then make a sepparate assignment/call to replace.
+#     if MeatPackOmitWhitespaces:
+#         return line.replace('e', 'E').replace('x', 'X').replace('g', 'G')
+#     else:
+#         return line.replace('x', 'X').replace('g', 'G')
+
+
+# -------------------------------------------------------------------------------
+def _unified_method(line: str) -> str:
+    # If it's an "M" command, leave it unchanged.
+    m_idx = line.find('M')
+    if m_idx >= 0:
+        if 48 <= ord(line[m_idx + 1]) <= 57:
+            return line
+
+    # Fix case capitalization for relevant letters (only packable ones)
+    # It's faster to chain them together like this then make a
+    # separate assignment/call to replace.
+    if MeatPackOmitWhitespaces:
+        line = line.replace('e', 'E').replace('x', 'X').replace('g', 'G')
+    else:
+        line = line.replace('x', 'X').replace('g', 'G')
+
+    # Strip whitespace
+    stripped = line.replace(' ', '')
+
+    # Check for asterisk, meaning there is a checksum we need to recompute after
+    # stripping whitespace out
+    if '*' in line:
+        checksum = 0
+        stripped = stripped.partition('*')[0]
+        for i, v in enumerate(stripped):
+            checksum ^= ord(v)
+        return stripped + "*" + str(checksum) + "\n"
+
+    return stripped
+
+
+# -------------------------------------------------------------------------------
+def pack_line(line: str, logger=None) -> bytearray:
     bts = bytearray()
 
     if line[0] == ';':
@@ -104,7 +226,13 @@ def pack_line(line: str) -> bytearray:
     elif len(line) < 2:
         return bts
     elif ';' in line:
-        line = line.split(';')[0].rstrip() + "\n"
+        line = line.partition(';')[0].rstrip() + "\n"
+
+    line = _unified_method(line)
+
+    if logger:
+        logger.info("[Test] Line sent: {}".format(line))
+
     line_len = len(line)
 
     for line_idx in range(0, line_len, 2):
@@ -113,11 +241,10 @@ def pack_line(line: str) -> bytearray:
             skip_last = True
 
         char_1 = line[line_idx]
-        if skip_last:
-            char_2 = char_1
-            char_1 = ' '
-        else:
-            char_2 = line[line_idx + 1]
+
+        # If we are at the last character and it needs to be skipped,
+        # pack a benign character like \n into it.
+        char_2 = '\n' if skip_last else line[line_idx + 1]
 
         c1_p = is_packable(char_1)
         c2_p = is_packable(char_2)
@@ -141,17 +268,6 @@ def pack_line(line: str) -> bytearray:
 
 
 # -------------------------------------------------------------------------------
-def pack_multiline_string(lines: str) -> bytearray:
-    bts = bytearray()
-
-    all_lines = lines.splitlines()
-    for line in all_lines:
-        bts += pack_line(line)
-
-    return bts
-
-
-# -------------------------------------------------------------------------------
 def pack_file(in_filename: str, out_filename: str):
     in_file = open(in_filename, "r")
     out_file = open(out_filename, "wb")
@@ -166,16 +282,16 @@ def pack_file(in_filename: str, out_filename: str):
 
     bts = bytearray()
 
-    bts.append(CommandByte)
-    bts.append(CommandByte)
-    bts.append(Command_PackingEnable)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_EnablePacking)
 
     for line in file_data_lines:
         bts += pack_line(line)
 
-    bts.append(CommandByte)
-    bts.append(CommandByte)
-    bts.append(Command_ResetDeviceState)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_SignalByte)
+    bts.append(MPCommand_ResetAll)
 
     out_file.write(bts)
     out_file.flush()

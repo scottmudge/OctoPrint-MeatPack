@@ -30,7 +30,7 @@ class MeatPackPlugin(
 
     def __init__(self):
         super().__init__()
-        self._serial_obj: PackingSerial = None
+        self._serial_obj = None
 
 # -------------------------------------------------------------------------------
     def serial_factory_hook(self, comm_instance, port, baudrate, read_timeout, *args, **kwargs):
@@ -66,7 +66,7 @@ class MeatPackPlugin(
             # noinspection PyProtectedMember
             set_close_exec(self._serial_obj._port_handle)
 
-        self._serial_obj.query_packing_state()
+        self._serial_obj.query_config_state()
 
         return self._serial_obj
 
@@ -75,6 +75,7 @@ class MeatPackPlugin(
         self._serial_obj.log_transmission_stats = self._settings.get_boolean(["logTransmissionStats"])
         self._serial_obj.play_song_on_print_complete = self._settings.get_boolean(["playSongOnPrintComplete"])
         self._serial_obj.packing_enabled = self._settings.get_boolean(["enableMeatPack"])
+        self._serial_obj.omit_all_spaces = self._settings.get_boolean(["omitSpaces"])
 
 # -------------------------------------------------------------------------------
     def get_settings_defaults(self):
@@ -82,6 +83,7 @@ class MeatPackPlugin(
             enableMeatPack=True,
             logTransmissionStats=True,
             playSongOnPrintComplete=False,
+            omitSpaces=False
         )
 
 # -------------------------------------------------------------------------------
@@ -154,6 +156,7 @@ class MeatPackPlugin(
         cur_packing_param = self._settings.get_boolean(["enableMeatPack"])
         cur_logging_param = self._settings.get_boolean(["logTransmissionStats"])
         cur_song_param = self._settings.get_boolean(["playSongOnPrintComplete"])
+        cur_nosp_param = self._settings.get_boolean(["omitSpaces"])
 
         if self._serial_obj.packing_enabled != cur_packing_param:
             self._logger.info("G-Code compression changed, now {}... synchronizing with device."
@@ -166,6 +169,10 @@ class MeatPackPlugin(
         if self._serial_obj.play_song_on_print_complete != cur_song_param:
             self._logger.info("Song playing setting changed: {}".format(
                 "Enabled" if cur_song_param else "Disabled"))
+
+        if self._serial_obj.omit_all_spaces != cur_nosp_param:
+            self._logger.info("No whitespace setting changed: {}".format(
+                "Enabled" if cur_nosp_param else "Disabled"))
 
         self.sync_settings_with_serial_obj()
 
