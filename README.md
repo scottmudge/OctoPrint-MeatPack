@@ -114,7 +114,11 @@ Here is an example. Take the following "G1" command.
 
 It is effectively as the following -- note that parnethetical groups (XX) are packed as a single byte:
 
-`(G1) ( X) (11) (3.) (21) (4 ) (9#)* (Y) (1.) (45) (# )* (E) (1.) (31) (54)`
+`(G1) ( X) (11) (3.) (21) (4 ) (9#)* (Y) (1.) (45) (# )* (E) (1.) (31) (54) (\n)`
+
+or with "Whitespace Removal" active:
+
+`(G1) (x1) (13) (.2) (14) (#9) (Y) (1.) (45) (E1) (.3) (15) (4\n)`
 
 \* these bytes don't show character order, but bit order. Higher order bits on left, lower order bits on right. See below. The other characters are sequential and only show how they are paired in bytes. 
 
@@ -124,7 +128,7 @@ In this way, 4 bits aren't wasted telling the packer that only one full width ch
 
 If 0b1111 is in the lower 4 bits, the full width character is immediately following, and the packed character in the upper 4 bits goes after the full width character. If it's in the higher 4 bits, the full width character goes after the character packed in the lower 4 bits. And if both upper and lower 4 bits are set to 1111, the next 2 characters are full width.
 
-So 15 bytes in this example. Plus the new line character. Which is also packed with whatever is after.
+So 16 bytes in this example (13 bytes with Whitespace Removal active). This is on-par or better than binary packing.
 
 This minor reordering is undone in the unpacking stage in the firmware. A little more complex, but it allows slightly more data to be packed. 
 
