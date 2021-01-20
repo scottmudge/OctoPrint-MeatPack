@@ -44,7 +44,7 @@ MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.co
 
 4. After installation, you should see a "MeatPrint" options page, and a new "TX Statistics" section in the "State" side bar section (if connected to your printer).
 
-### Known Issues:
+### Known Limitations:
 
 1. This requires a minor modification to your printer's firmware! I have currently only compiled modified firmware for Prusa's MK3/3S printers! 
 
@@ -53,10 +53,6 @@ I would like to integrate these changes into Marlin or similar firmwares as well
 Feel free to use the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository and use them in other firmwares (perhaps use it as a git module, to keep it up to date if I make modifications). If you use it, just make sure you attribute me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
 
 2. It doesn't work with the Virtual Printer in OctoPrint. Obviously... it's not a real serial connection.
-
-## How does it work?
-
-This plugin creates a wrapper around the serial.Seral() object. This wrapper overrides the read and write operations to provide extra utility. The PackingSerial class manages all of the state control and data packing/compression automatically. State control is managed by sending specific data packets to the modified firmware, telling it to turn on or turn off MeatPacking support dynamically. Once enabled, the PackingSerial verifies that it is enabled in the firmware by sending a query command, and once the states are synchronized, it sends data with the packing approach detailed below.
 
 ## Why compress/pack G-Code? What is this?
 
@@ -109,6 +105,30 @@ in the event that any character *does not* fall into the list of the 15-most com
 
 **MeatPack** also provides for a rudimentary communication/control layer by using a special character (0xFF) sent in a 
 specific sequence. 0XFF is virtually never found naturally in g-code, so it is can be considered a reserved character.
+
+## How does it work?
+
+Here is an example. Take the following "G1" command.
+
+`G1 X113.214 Y91.45 E1.3154`
+
+It is effectively as the following -- note that parnethetical groups (XX) are packed as a single byte:
+
+`(G1) ( X) (11) (3.) (21) (4 ) (9#)* (Y) (1.) (45) (# )* (E) (1.) (31) (54)`
+
+\* these bytes don't show character order, but bit order. Higher order bits on left, lower order bits on right. See below. The other characters are sequential and only show how they are paired in bytes. 
+
+The packer reorders some characters if the full width character is surrounded by packable characters. The # here is a flag (0b1111) which tells the unpacker where the following full width character should go.
+
+In this way, 4 bits aren't wasted telling the packer that only one full width character is coming up. 0xFF (0b11111111) tells the unpacker that the next 2 bytea are full width.
+
+If 0b1111 is in the lower 4 bits, the full width character is immediately following, and the packed character in the upper 4 bits goes after the full width character. If it's in the higher 4 bits, the full width character goes after the character packed in the lower 4 bits. And if both upper and lower 4 bits are set to 1111, the next 2 characters are full width.
+
+So 15 bytes in this example. Plus the new line character. Which is also packed with whatever is after.
+
+This minor reordering is undone in the unpacking stage in the firmware. A little more complex, but it allows slightly more data to be packed. 
+
+This is also why the command sequence is 2 0xFF bytes in a row, followed by a command byte. If packing is enabled, 0xFF means the next character is some standard ASCII character (or at the very least not 0xFF), so 2 0xFF bytes in a row would never occur naturally except in these control/command sequences. And if packing is disabled, 0xFF is an invalid g-code character (the Prusa firmware even discards all bytes higher than 127U). This command signal preamble can be increased to 3 or more 0xFF bytes if some firmwares tend to have these bytes in error more frequently. But from what I've seen, it's generally 0x0 or null bytes which are received or sent in error.  For instance, in noisy or unshielded connections. 
 
 ## Why "Meat"? 
 
