@@ -2,7 +2,7 @@
 
 Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code compression!
 
-## Current Features (v1.2.11)
+## Current Features (v1.4.1)
 
 1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. *NOTE:* please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
@@ -17,13 +17,14 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
     __NOTE__: This extra text section can be disabled in the plugin options page.
 
-3. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
+3. A feature called "Whitespace Removal", which strips away all unnecessary whitespace from outgoing gcode on the serial port. This also allows the 'E' character to be packed in place of the ' ' space character. This effectively boosts the compression ratio down to 0.55!
+4. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
 
 ## NOTE: To use MeatPack, please install a compatible version of the Prusa firmware here:
 
 https://github.com/scottmudge/Prusa-Firmware-MeatPack
 
-MeatPack-support Firmware Release 3.9.3: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/3.9.3-MeatPack
+MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
 
 ### Only version 3.9.3 from the fork above is compatible!
 
