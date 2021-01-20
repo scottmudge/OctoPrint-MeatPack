@@ -118,7 +118,7 @@ It is effectively packed as the following -- note that parenthetical groups (XX)
 
 or with "Whitespace Removal" active:
 
-`(G1) (X1) (13) (.2) (14) (#9) (Y) (1.) (45) (E1) (.3) (15) (4\n)`
+`(G1) (X1) (13) (.2) (14) (9#) (Y) (1.) (45) (E1) (.3) (15) (4\n)`
 
 \* these bytes don't show character order, but bit order. Higher order bits on left, lower order bits on right. See below. The other characters are sequential and only show how they are paired in bytes. 
 
