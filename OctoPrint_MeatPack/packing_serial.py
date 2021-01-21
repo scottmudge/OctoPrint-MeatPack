@@ -28,6 +28,9 @@ class ThreadedSongPlayer:
         self._running = True
         # tuple -- (note len in ms, g-code)
         song = songplay.get_song_in_gcode()
+        
+        # sleep 3.5 seconds to allow command queue to empty
+        time.sleep(3.5)
 
         note_len_offset_ms = -10
 
