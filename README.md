@@ -1,6 +1,6 @@
 ![# OctoPrint-MeatPack](https://raw.githubusercontent.com/scottmudge/OctoPrint-MeatPack/master/MeatPack_Logo.png)
 
-Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code compression!
+Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code compression! MeatPack nearly doubles the effective data rate of a standard 115,200 baud-rate serial connection to **210,000** baud!
 
 ## Current Features (v1.4.1)
 
