@@ -58,7 +58,7 @@ Operation: send command word (0xFF 0xFF), send command byte, send close byte (0x
 """
 
 MPCommand_None              = 0
-MPCommand_TogglePacking     = 253
+# MPCommand_TogglePacking     = 253 -- Currently unused, byte 253 can be reused later.
 MPCommand_EnablePacking     = 251
 MPCommand_DisablePacking    = 250
 MPCommand_ResetAll          = 249
@@ -109,77 +109,6 @@ def get_command_bytes(command) -> bytearray:
     out.append(MPCommand_SignalByte)
     out.append(command)
     return out
-
-
-# -------------------------------------------------------------------------------
-# def _test_to_keep_whitespace(gcode: str) -> bool:
-#     """Returns true if gcode shouldn't be stripped of whitespaces."""
-#
-#     """Notes:
-#
-#         At first I tried manually checking codes that implicitly require whitespace.
-#             E.g., M117, to update LCD status message.
-#
-#
-#         Then I realized it would be safe to only allow conventional 'G' codes. However,
-#         at least with Prusa FW 3.9.3 for MK3, removing whitespace for all 'G' commands
-#         lead to performance problems.
-#
-#         My final test was to limit whitespace removal to only a small subsect of the 'G'
-#         commands, but the commands that make up >95% of the g-code files.
-#
-#     """
-#
-#     idx = gcode.find('G')
-#     if idx >= 0:
-#         # First test if it's a single-digit "G' command, then test the second character
-#         # to see if it is an ascii number.
-#         if (gcode[idx + 2] == ' ') and (48 <= ord(gcode[idx + 1]) <= 57):
-#             return False
-#
-#     return True
-
-
-# -------------------------------------------------------------------------------
-# def _recompute_checksum(in_str: str) -> str:
-#     """
-#         Line Structure:
-#
-#             one space   no whitespace
-#                 \             \       \
-#         N#####      <Commands>    '*'   '#'
-#            ^            ^          ^      ^
-#          Line No     Commands   asterisk   single byte
-#     """
-#     # if _test_to_keep_whitespace(in_str):
-#     #     return in_str
-#     #
-#     # stripped = in_str.replace(' ', '')
-#     # if '*' in in_str:
-#     #     checksum = 0
-#     #     stripped = stripped.partition('*')[0]
-#     #     for i, v in enumerate(stripped):
-#     #         checksum ^= ord(v)
-#     #     return stripped + "*" + str(checksum) + "\n"
-#     # return stripped
-
-
-# -------------------------------------------------------------------------------
-# def _ensure_text_case(line: str) -> str:
-#     """Ensure that the line has proper case. Don't apply this to "M"/machine commands."""
-#
-#     m_idx = line.find('M')
-#     if m_idx >= 0:
-#         # If character after is a number, return string unchanged
-#         if 48 <= ord(line[m_idx + 1]) <= 57:
-#             return line
-#
-#     # If whitespace is omitted, also convert E. It's faster to chain them together like this
-#     # then make a sepparate assignment/call to replace.
-#     if MeatPackOmitWhitespaces:
-#         return line.replace('e', 'E').replace('x', 'X').replace('g', 'G')
-#     else:
-#         return line.replace('x', 'X').replace('g', 'G')
 
 
 # -------------------------------------------------------------------------------
