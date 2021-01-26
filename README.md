@@ -30,7 +30,11 @@ MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.co
 
 ## Installation
 
-**NOTE:** The plugin has been submitted to the official OctoPrint plugins repository, but is pending review and approval. To manually install, please follow the directions below.
+**UPDATE:** OctoPrint has approved this plugin for the official plugin repository, so it should be available to install via the in-built plugin manager now. If you'd still rather manually install it, please follow the instructions below.
+
+1. Install via the OctoPrint plugin manager.
+
+**-OR-**
 
 1. Open a terminal or console (or SSH into your Raspberry Pi if using one) and activate OctoPrint's virtual environment (Python). Typically this will be in `~/oprint/`. You can activate the virtual environment by using the following command: 
 
@@ -112,6 +116,12 @@ Here is an example. Take the following "G1" command.
 
 `G1 X113.214 Y91.45 E1.3154`
 
+Unpacked, it is sent as distinct bytes (B):
+
+`(G) (1) ( ) (X) (1) (1) (3) (.) (2) (1) (4) ( ) (Y) (9) (1) (.) (4) (5) ( ) (E) (1) (.) (3) (1) (5) (4) (\n)`
+
+In total, 27 bytes.
+
 It is effectively packed as the following -- note that parenthetical groups (XX) indicate that the contents are packed as a single byte:
 
 `(G1) ( X) (11) (3.) (21) (4 ) (9#)* (Y) (1.) (45) (# )* (E) (1.) (31) (54) (\n)`
@@ -128,7 +138,7 @@ In this way, 4 bits aren't wasted telling the packer that only one full width ch
 
 If 0b1111 is in the lower 4 bits, the full width character is immediately following, and the packed character in the upper 4 bits goes after the full width character. If it's in the higher 4 bits, the full width character goes after the character packed in the lower 4 bits. And if both upper and lower 4 bits are set to 1111, the next 2 characters are full width.
 
-So 16 bytes in this example (13 bytes with Whitespace Removal active). This is on-par or better than binary packing.
+So 16 bytes in this example (13 bytes with Whitespace Removal active). This is on-par or better than binary packing. With whitespace removal active, the packed command is less than **half** the size of the original command.
 
 This minor reordering is undone in the unpacking stage in the firmware. A little more complex, but it allows slightly more data to be packed. 
 
