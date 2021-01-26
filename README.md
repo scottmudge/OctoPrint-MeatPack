@@ -20,11 +20,9 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 3. A feature called "Whitespace Removal", which strips away all unnecessary whitespace from outgoing gcode on the serial port. This also allows the 'E' character to be packed in place of the ' ' space character. This effectively boosts the compression ratio down to 0.55!
 4. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
 
-## NOTE: To use MeatPack, please install an updated build of Marlin Firmware with MeatPack support integrated, or for **Prusa printers**, install compatible version of the Prusa firmware here:
+**NOTE:** To use MeatPack, please install an updated build of **Marlin Firmware** with MeatPack support integrated, or for **Prusa printers**, install compatible version of the Prusa firmware here:
 
-**Prusa** Firmware with MeatPack-support (MP-Firmware v1.1.0, based on Prusa FW 3.9.3): https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
-
-### Only version 3.9.3 from the fork above is compatible!
+**Prusa Firmware** with MeatPack-support (MP-Firmware v1.1.0, based on Prusa FW 3.9.3): https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
 
 ## Installation
 
