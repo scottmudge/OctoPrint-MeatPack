@@ -115,7 +115,7 @@ $(function() {
 
         self.txRateString = function() {
             if (self.dataReceived){
-                return self.toFileSizeString((float)self.totalBytesSec, 1) + "/sec";
+                return self.toFileSizeString(Math.round(self.totalBytesSec), 1) + "/sec";
             }
             else{
                 return "No Data";
