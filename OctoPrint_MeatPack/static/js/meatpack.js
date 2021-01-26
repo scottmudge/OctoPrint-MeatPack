@@ -66,6 +66,7 @@ $(function() {
         };
 
         // Thanks @FormerLurker - github
+        var byte = 1024;
         self.toFileSizeString = function (bytes, precision) {
             precision = precision || 0;
 
