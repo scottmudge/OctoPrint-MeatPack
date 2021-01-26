@@ -7,7 +7,11 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 * Marlin (merged Jan. 25, 2021, so check that your release was built after this date)
 * Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
 
-## Current Features (v1.4.3)
+## OctoPrint Support:
+
+Should be compatible with any OctoPrint installation providing access to the `serial_factory_hook()`. According to the API documentation, this wasintoruced in OctoPrint version 1.2. As far as Python is concerned, version 1.5.9 should be compatible back to 2.7 (only tested from 3.5 onward), but it is **highly** recommended to update to Python 3 if you have not yet done so.
+
+## Current Features (v1.5.9)
 
 1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
@@ -43,7 +47,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 2. After activating the OctoPrint environment, run the following command:
 
-`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.4.3.zip`
+`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.5.9.zip`
 
 3. Restart your OctoPrint server, or restart the machine.
 
