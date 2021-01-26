@@ -70,6 +70,8 @@ $(function() {
         self.toFileSizeString = function (bytes, precision) {
             precision = precision || 0;
 
+            if (bytes < 1.0) bytes = 0.0;
+
             if (Math.abs(bytes) < byte) {
                 return bytes + ' bytes';
             }
