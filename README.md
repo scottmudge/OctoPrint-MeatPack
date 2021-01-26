@@ -2,9 +2,14 @@
 
 Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code compression! MeatPack nearly doubles the effective data rate of a standard 115,200 baud-rate serial connection to **210,000** baud!
 
+## Firmware with MeatPack Support:
+
+* Marlin (merged Jan. 25, 2021, so check that your release was built after this date)
+* Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
+
 ## Current Features (v1.4.3)
 
-1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. *NOTE:* please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
+1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
 ![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
 
@@ -20,17 +25,17 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 3. A feature called "Whitespace Removal", which strips away all unnecessary whitespace from outgoing gcode on the serial port. This also allows the 'E' character to be packed in place of the ' ' space character. This effectively boosts the compression ratio down to 0.55!
 4. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
 
-## NOTE: To use MeatPack, please install a compatible version of the Prusa firmware here:
+**NOTE:** To use MeatPack, please install an updated build of **Marlin Firmware** with MeatPack support integrated, or for **Prusa printers**, install compatible version of the Prusa firmware here:
 
-https://github.com/scottmudge/Prusa-Firmware-MeatPack
-
-MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
-
-### Only version 3.9.3 from the fork above is compatible!
+**Prusa Firmware** with MeatPack-support (MP-Firmware v1.1.0, based on Prusa FW 3.9.3): https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
 
 ## Installation
 
-**NOTE:** The plugin has been submitted to the official OctoPrint plugins repository, but is pending review and approval. To manually install, please follow the directions below.
+**UPDATE:** OctoPrint has approved this plugin for the official plugin repository, so it should be available to install via the in-built plugin manager now. If you'd still rather manually install it, please follow the instructions below.
+
+1. Install via the OctoPrint plugin manager.
+
+**-OR-**
 
 1. Open a terminal or console (or SSH into your Raspberry Pi if using one) and activate OctoPrint's virtual environment (Python). Typically this will be in `~/oprint/`. You can activate the virtual environment by using the following command: 
 
@@ -46,11 +51,7 @@ MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.co
 
 ### Known Limitations:
 
-1. This requires a minor modification to your printer's firmware! I have currently only compiled modified firmware for Prusa's MK3/3S printers! 
-
-I would like to integrate these changes into Marlin or similar firmwares as well. The changes are very minor, and only require placing a couple function calls at the location where serial characters are read and parsed. In Prusa's firmware, this is in `cmdqueue.c`. 
-
-Feel free to use the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository and use them in other firmwares (perhaps use it as a git module, to keep it up to date if I make modifications). If you use it, just make sure you attribute me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
+1. This requires a minor modification to your printer's firmware! Marlin has officially adopted support, but Prusa is currently reviewing changes. I have currently compiled modified firmware for Prusa's MK3/3S printers, available above. 
 
 2. It doesn't work with the Virtual Printer in OctoPrint. Obviously... it's not a real serial connection.
 
@@ -112,6 +113,12 @@ Here is an example. Take the following "G1" command.
 
 `G1 X113.214 Y91.45 E1.3154`
 
+Unpacked, it is sent as distinct bytes (B):
+
+`(G) (1) ( ) (X) (1) (1) (3) (.) (2) (1) (4) ( ) (Y) (9) (1) (.) (4) (5) ( ) (E) (1) (.) (3) (1) (5) (4) (\n)`
+
+In total, 27 bytes.
+
 It is effectively packed as the following -- note that parenthetical groups (XX) indicate that the contents are packed as a single byte:
 
 `(G1) ( X) (11) (3.) (21) (4 ) (9#)* (Y) (1.) (45) (# )* (E) (1.) (31) (54) (\n)`
@@ -128,7 +135,7 @@ In this way, 4 bits aren't wasted telling the packer that only one full width ch
 
 If 0b1111 is in the lower 4 bits, the full width character is immediately following, and the packed character in the upper 4 bits goes after the full width character. If it's in the higher 4 bits, the full width character goes after the character packed in the lower 4 bits. And if both upper and lower 4 bits are set to 1111, the next 2 characters are full width.
 
-So 16 bytes in this example (13 bytes with Whitespace Removal active). This is on-par or better than binary packing.
+So 16 bytes in this example (13 bytes with Whitespace Removal active). This is on-par or better than binary packing. With whitespace removal active, the packed command is less than **half** the size of the original command.
 
 This minor reordering is undone in the unpacking stage in the firmware. A little more complex, but it allows slightly more data to be packed. 
 
