@@ -307,7 +307,7 @@ class PackingSerial(Serial):
         return {
             'totalBytes': self._diagBytesSentTotal,
             'packedBytes': self._diagBytesSentActualTotal,
-            'totalBytesSec': self._totalBytesSec,
+            'totalBytesSec': self._totalBytesSec
         }
 
         # -------------------------------------------------------------------------------
