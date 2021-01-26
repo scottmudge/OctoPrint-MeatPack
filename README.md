@@ -4,7 +4,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ## Firmware with MeatPack Support:
 
-* Marlin (merged Jan. 25, 2021, so check that your release was built after this date)
+* Marlin (merged Jan. 25, 2021) - check to make sure the build you are using has the `MEATPACK` option enabled during build. Some build servers do not have this enabled, so if the plugin does not work or it fails to connnect, this is likely why.
 * Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
 
 ## OctoPrint Support:
