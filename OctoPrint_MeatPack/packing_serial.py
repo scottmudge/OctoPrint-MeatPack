@@ -307,7 +307,7 @@ class PackingSerial(Serial):
         return {
             'totalBytes': self._diagBytesSentTotal,
             'packedBytes': self._diagBytesSentActualTotal,
-            'totalBytesSec': self._totalKBSec,
+            'totalBytesSec': self._totalBytesSec
         }
 
         # -------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ class PackingSerial(Serial):
 
         if elapsed_sec > 2.0:
             self._diagTimer = curTime
-            self._totalKBSec = (self._diagBytesSent / elapsed_sec)
+            self._totalBytesSec = (self._diagBytesSent / elapsed_sec)
 
             if callable(self.statsUpdateCallback):
                 self.statsUpdateCallback()

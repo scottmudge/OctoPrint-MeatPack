@@ -66,24 +66,27 @@ $(function() {
         };
 
         // Thanks @FormerLurker - github
+        var byte = 1024;
         self.toFileSizeString = function (bytes, precision) {
             precision = precision || 0;
 
+            if (bytes < 1.0) bytes = 0.0;
+
             if (Math.abs(bytes) < byte) {
-                return bytes + ' B';
+                return bytes + ' Bytes';
             }
             var units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
             var u = -1;
             do {
                 bytes /= byte;
                 ++u;
-            } while (Math.abs(bytes) >= byte && u < units.length - 1);
+            } while (Math.abs(bytes) >= byte && u < units.length - 3);
             return bytes.toFixed(precision) + ' ' + units[u];
         };
 
         self.txTotalString = function() {
             if (self.dataReceived){
-                return self.toFileSizeString(self.totalBytes, 1);
+                return self.toFileSizeString(self.totalBytes, 3);
             }
             else{
                 return "No Data";
@@ -92,7 +95,7 @@ $(function() {
 
         self.txPackedString = function() {
             if (self.dataReceived){
-                return self.toFileSizeString(self.packedBytes, 1);
+                return self.toFileSizeString(self.packedBytes, 3);
             }
             else{
                 return "No Data";
@@ -112,7 +115,7 @@ $(function() {
 
         self.txRateString = function() {
             if (self.dataReceived){
-                return self.toFileSizeString(self.totalBytesSec, 1);
+                return self.toFileSizeString(Math.round(self.totalBytesSec), 3) + "/sec";
             }
             else{
                 return "No Data";
