@@ -4,7 +4,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ## Current Features (v1.4.3)
 
-1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. *NOTE:* please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
+1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but do *NOTE:* until Prusa approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
 ![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
 
@@ -20,11 +20,9 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 3. A feature called "Whitespace Removal", which strips away all unnecessary whitespace from outgoing gcode on the serial port. This also allows the 'E' character to be packed in place of the ' ' space character. This effectively boosts the compression ratio down to 0.55!
 4. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
 
-## NOTE: To use MeatPack, please install a compatible version of the Prusa firmware here:
+## NOTE: To use MeatPack, please install an updated build of Marlin with MeatPack support integreated, or for **Prusa printers**, install compatible version of the Prusa firmware here:
 
-https://github.com/scottmudge/Prusa-Firmware-MeatPack
-
-MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
+**Prusa** Firmware with MeatPack-support (MP-Firmware v1.1.0, based on Prusa FW 3.9.3): https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
 
 ### Only version 3.9.3 from the fork above is compatible!
 
@@ -50,11 +48,7 @@ MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.co
 
 ### Known Limitations:
 
-1. This requires a minor modification to your printer's firmware! I have currently only compiled modified firmware for Prusa's MK3/3S printers! 
-
-I would like to integrate these changes into Marlin or similar firmwares as well. The changes are very minor, and only require placing a couple function calls at the location where serial characters are read and parsed. In Prusa's firmware, this is in `cmdqueue.c`. 
-
-Feel free to use the `MeatPack.h` and `MeatPack.cpp` files in the firmware repository and use them in other firmwares (perhaps use it as a git module, to keep it up to date if I make modifications). If you use it, just make sure you attribute me (and keep the name... it's fun!). You can see how I integrated it with the serial connection in `cmdqueue.c`. It's fairly simple.
+1. This requires a minor modification to your printer's firmware! Marlin has officially adopted support, but Prusa is currently reviewing changes. I have currently compiled modified firmware for Prusa's MK3/3S printers, available above. 
 
 2. It doesn't work with the Virtual Printer in OctoPrint. Obviously... it's not a real serial connection.
 
