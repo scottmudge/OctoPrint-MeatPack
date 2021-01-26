@@ -2,7 +2,7 @@
 
 Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code compression! MeatPack nearly doubles the effective data rate of a standard 115,200 baud-rate serial connection to **210,000** baud!
 
-## Current Features (v1.4.1)
+## Current Features (v1.4.3)
 
 1. Fully working g-code compression ("MeatPack") support for compatible Prusa printers. *NOTE:* please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
@@ -38,7 +38,7 @@ MeatPack-support (MP-Firmware v1.1.0) Firmware Release v3.9.3: https://github.co
 
 2. After activating the OctoPrint environment, run the following command:
 
-`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.2.11.zip`
+`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.4.3.zip`
 
 3. Restart your OctoPrint server, or restart the machine.
 
