@@ -2,7 +2,7 @@
 
 Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code compression! MeatPack nearly doubles the effective data rate of a standard 115,200 baud-rate serial connection to **210,000** baud!
 
-### Firmware with MeatPack Support:
+## Firmware with MeatPack Support:
 
 * Marlin (merged Jan. 25, 2021, so check that your release was built after this date)
 * Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
