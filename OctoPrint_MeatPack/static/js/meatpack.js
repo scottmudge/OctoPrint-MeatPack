@@ -71,7 +71,7 @@ $(function() {
             precision = precision || 0;
 
             if (Math.abs(bytes) < byte) {
-                return bytes + ' B';
+                return bytes + ' bytes';
             }
             var units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
             var u = -1;
@@ -113,7 +113,7 @@ $(function() {
 
         self.txRateString = function() {
             if (self.dataReceived){
-                return self.toFileSizeString(self.totalBytesSec, 1);
+                return self.toFileSizeString(self.totalBytesSec, 1) + "/sec";
             }
             else{
                 return "No Data";
