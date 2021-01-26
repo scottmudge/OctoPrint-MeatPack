@@ -32,9 +32,9 @@ $(function() {
 
         self.transmissionStats = ko.observableArray([]);
         self.dataReceived = false;
-        self.totalKBytes = 0.0
-        self.totalKBytesSec = 0.0
-        self.packedKBytes = 0.0
+        self.totalBytes = 0.0
+        self.totalBytesSec = 0.0
+        self.packedBytes = 0.0
 
         self.packingEnabled = ko.pureComputed(function() {
             return self.settings.settings.plugins.meatpack.enableMeatPack() ? true : false;
@@ -57,17 +57,33 @@ $(function() {
         };
 
         self.fromResponse = function(response){
-            self.totalKBytes = response.transmissionStats.totalKBytes;
-            self.totalKBytesSec = response.transmissionStats.totalKBSec;
-            self.packedKBytes = response.transmissionStats.packedKBytes;
+            self.totalBytes = response.transmissionStats.totalBytes;
+            self.totalBytesSec = response.transmissionStats.totalBytesSec;
+            self.packedBytes = response.transmissionStats.packedBytes;
 
             // self.transmissionStats(response);
             self.dataReceived = true;
         };
 
+        // Thanks @FormerLurker - github
+        self.toFileSizeString = function (bytes, precision) {
+            precision = precision || 0;
+
+            if (Math.abs(bytes) < byte) {
+                return bytes + ' B';
+            }
+            var units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            var u = -1;
+            do {
+                bytes /= byte;
+                ++u;
+            } while (Math.abs(bytes) >= byte && u < units.length - 1);
+            return bytes.toFixed(precision) + ' ' + units[u];
+        };
+
         self.txTotalString = function() {
             if (self.dataReceived){
-                return self.totalKBytes.toFixed(3) + " KB";
+                return self.toFileSizeString(self.totalBytes, 1);
             }
             else{
                 return "No Data";
@@ -76,7 +92,7 @@ $(function() {
 
         self.txPackedString = function() {
             if (self.dataReceived){
-                return self.packedKBytes.toFixed(3) + " KB";
+                return self.toFileSizeString(self.packedBytes, 1);
             }
             else{
                 return "No Data";
@@ -85,8 +101,8 @@ $(function() {
 
         self.txRatioString = function() {
 
-            if (self.dataReceived && self.totalKBytes > 0.0){
-                var ratio = self.packedKBytes / self.totalKBytes;
+            if (self.dataReceived && self.totalBytes > 0.0){
+                var ratio = self.packedBytes / self.totalBytes;
                 return ratio.toFixed(3);
             }
             else{
@@ -96,7 +112,7 @@ $(function() {
 
         self.txRateString = function() {
             if (self.dataReceived){
-                return self.totalKBytesSec.toFixed(3) + " KB/sec";
+                return self.toFileSizeString(self.totalBytesSec, 1);
             }
             else{
                 return "No Data";

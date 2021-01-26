@@ -28,8 +28,14 @@ class MeatPackPlugin(
     over the serial connection.
     """
 
+# -------------------------------------------------------------------------------
     def __init__(self):
-        super().__init__()
+        octoprint.plugin.SettingsPlugin.__init__(self)
+        octoprint.plugin.StartupPlugin.__init__(self)
+        octoprint.plugin.TemplatePlugin.__init__(self)
+        octoprint.plugin.AssetPlugin.__init__(self)
+        octoprint.plugin.SimpleApiPlugin.__init__(self)
+        octoprint.plugin.ShutdownPlugin.__init__(self)
         self._serial_obj = None
 
 # -------------------------------------------------------------------------------

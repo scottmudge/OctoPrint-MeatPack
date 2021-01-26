@@ -64,9 +64,9 @@ def get_note_str(freq: int, length: int):
 def get_song_in_gcode() -> list:
     out = list()
     for note in MeatBallSongNotes:
-        note_str: str = note[0]
-        note_oct: int = note[1]
-        note_len: int = note[2]
+        note_str = note[0]
+        note_oct = note[1]
+        note_len = note[2]
         out.append((note_len, get_note_str(get_note_freq(note_str, (note_oct + OctaveShift)), note_len)))
     return out
 

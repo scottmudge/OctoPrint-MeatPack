@@ -68,11 +68,11 @@ class PackingSerial(Serial):
         self._sync_pending = False
         self._query_msg_timer = time.time()
         self._logger = logger
-        self._log_transmission_stats: bool = True
-        self.play_song_on_print_complete: bool = True
+        self._log_transmission_stats = True
+        self.play_song_on_print_complete = True
         self._print_started = False
         self._home_detected = False
-        self._protocol_version: int = 0
+        self._protocol_version = 0
 
         self._diagTimer = time.time()
         self._diagBytesSentActualTotal = 0
@@ -81,23 +81,21 @@ class PackingSerial(Serial):
         self._diagBytesSentActual = 0
 
         # Stats
-        self._totalKBSent = 0.0
-        self._packedKBSent = 0.0
-        self._totalKBSec = 0.0
+        self._totalBytesSec = 0.0
 
         self.statsUpdateCallback = None
         self._already_initialized = False
 
         self._buffer = list()
-        self._song_player: ThreadedSongPlayer = None
-        self._song_player_thread: Thread = None
+        self._song_player = None
+        self._song_player_thread = None
 
         self._config_sync_flags = array('B', len(MPSyncedConfigFlags) * [0])
         self._config_sync_flags_protocol_ver = array('B', len(MPSyncedConfigFlags) * [0])
         self._init_device_config_protocl_versions()
         self._reset_config_sync_state()
 
-        super().__init__(**kwargs)
+        super(PackingSerial, self).__init__(**kwargs)
 
 # -------------------------------------------------------------------------------
     @property
@@ -181,7 +179,7 @@ class PackingSerial(Serial):
 
 # -------------------------------------------------------------------------------
     def readline(self, **kwargs) -> bytes:
-        read = super().readline(**kwargs)
+        read = super(PackingSerial, self).readline(**kwargs)
 
         read_str = read.decode("UTF-8")
 
@@ -220,8 +218,8 @@ class PackingSerial(Serial):
                 if not self._packing_enabled:
                     self._config_sync_flags[MPSyncedConfigFlags.Enabled] = 0
                     self._sync_pending = True
-                    super().write(mp.get_command_bytes(mp.MPCommand_DisablePacking))
-                    super().flushOutput()
+                    super(PackingSerial, self).write(mp.get_command_bytes(mp.MPCommand_DisablePacking))
+                    super(PackingSerial, self).flushOutput()
                     if not sync_pending_buf:
                         self._log("MeatPack enabled on device but will be set disabled. Sync'ing state.")
                     # Check again
@@ -235,8 +233,8 @@ class PackingSerial(Serial):
                 # We do want it enabled, but it says it isn't
                 if self._packing_enabled:
                     self._sync_pending = True
-                    super().write(mp.get_command_bytes(mp.MPCommand_EnablePacking))
-                    super().flushOutput()
+                    super(PackingSerial, self).write(mp.get_command_bytes(mp.MPCommand_EnablePacking))
+                    super(PackingSerial, self).flushOutput()
                     if not sync_pending_buf:
                         self._log("MeatPack disabled on device but will be set enabled. Sync'ing state.")
                     # Check again
@@ -254,8 +252,8 @@ class PackingSerial(Serial):
                     # Need to disable it
                     if not self._no_spaces:
                         self._sync_pending = True
-                        super().write(mp.get_command_bytes(mp.MPCommand_DisableNoSpaces))
-                        super().flushOutput()
+                        super(PackingSerial, self).write(mp.get_command_bytes(mp.MPCommand_DisableNoSpaces))
+                        super(PackingSerial, self).flushOutput()
                         if not sync_pending_buf:
                             self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
                         self.query_config_state()
@@ -268,8 +266,8 @@ class PackingSerial(Serial):
                     # Need to enabled it
                     if self._no_spaces:
                         self._sync_pending = True
-                        super().write(mp.get_command_bytes(mp.MPCommand_EnableNoSpaces))
-                        super().flushOutput()
+                        super(PackingSerial, self).write(mp.get_command_bytes(mp.MPCommand_EnableNoSpaces))
+                        super(PackingSerial, self).flushOutput()
                         if not sync_pending_buf:
                             self._log("No-Spaces enabled on device, but will be set disabled. Sync'ing state.")
                         self.query_config_state()
@@ -307,9 +305,9 @@ class PackingSerial(Serial):
     # -------------------------------------------------------------------------------
     def get_transmission_stats(self) -> dict:
         return {
-            'totalKBytes': self._totalKBSent,
-            'packedKBytes': self._packedKBSent,
-            'totalKBSec': self._totalKBSec,
+            'totalBytes': self._diagBytesSentTotal,
+            'packedBytes': self._diagBytesSentActualTotal,
+            'totalBytesSec': self._totalKBSec,
         }
 
         # -------------------------------------------------------------------------------
@@ -328,10 +326,7 @@ class PackingSerial(Serial):
 
         if elapsed_sec > 2.0:
             self._diagTimer = curTime
-
-            self._totalKBSent = (self._diagBytesSentTotal / 1024.0)
-            self._packedKBSent = (self._diagBytesSentActualTotal / 1024.0)
-            self._totalKBSec = (self._diagBytesSent / 1024.0 / elapsed_sec)
+            self._totalKBSec = (self._diagBytesSent / elapsed_sec)
 
             if callable(self.statsUpdateCallback):
                 self.statsUpdateCallback()
@@ -344,7 +339,7 @@ class PackingSerial(Serial):
         if self._stable_state():
             if len(self._buffer) > 0:
                 for line in self._buffer:
-                    super().write(self._process_line_bytes(line))
+                    super(PackingSerial, self).write(self._process_line_bytes(line))
                 self._buffer.clear()
 
 # -------------------------------------------------------------------------------
@@ -371,7 +366,7 @@ class PackingSerial(Serial):
             self._flush_buffer()
 
             data_out = self._process_line_bytes(data)
-            super().write(data_out)
+            super(PackingSerial, self).write(data_out)
             actual_bytes = len(data_out)
 
             self._benchmark_write_speed(actual_bytes, total_bytes)
@@ -392,7 +387,7 @@ class PackingSerial(Serial):
 
             self._query_msg_timer = time.time()
             self._reset_config_sync_state()
-            super().write(mp.get_command_bytes(mp.MPCommand_QueryConfig))
+            super(PackingSerial, self).write(mp.get_command_bytes(mp.MPCommand_QueryConfig))
             self.flushOutput()
             self._expecting_response = True
         else:
