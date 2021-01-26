@@ -4,7 +4,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ## Current Features (v1.4.3)
 
-1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but do *NOTE:* until Prusa approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
+1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
 ![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
 
