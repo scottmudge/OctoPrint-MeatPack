@@ -340,7 +340,7 @@ class PackingSerial(Serial):
             if len(self._buffer) > 0:
                 for line in self._buffer:
                     super(PackingSerial, self).write(self._process_line_bytes(line))
-                del self._buffer[:]  # clear buffer
+                self._buffer *= 0
 
 # -------------------------------------------------------------------------------
     def _process_line_bytes(self, line):
@@ -361,7 +361,8 @@ class PackingSerial(Serial):
         total_bytes = len(data)
 
         if not self._stable_state():
-            self._buffer.append(data)
+            if total_bytes > 2:
+                self._buffer.append(data)
         else:
             self._flush_buffer()
 
