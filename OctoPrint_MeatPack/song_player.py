@@ -9,7 +9,7 @@ BaseNotes = {
 }
 
 
-def get_note_freq(note: str, octave: int) -> int:
+def get_note_freq(note, octave):
     return int(round(BaseNotes[note] * (2**(octave-1))))
 
 
@@ -47,7 +47,7 @@ MeatBallSongNotes = (
 )
 
 
-def get_note_str(freq: int, length: int):
+def get_note_str(freq, length):
     if freq < 0:
         freq = 0
     elif freq > 20000:
@@ -61,7 +61,7 @@ def get_note_str(freq: int, length: int):
     return "M300 S{} P{} \n".format(str(freq), str(length))
 
 
-def get_song_in_gcode() -> list:
+def get_song_in_gcode():
     out = list()
     for note in MeatBallSongNotes:
         note_str = note[0]

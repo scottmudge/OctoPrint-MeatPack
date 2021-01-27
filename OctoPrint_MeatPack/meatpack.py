@@ -77,17 +77,17 @@ def initialize():
 
 
 # -------------------------------------------------------------------------------
-def pack_chars(low: str, high: str) -> int:
+def pack_chars(low, high):
     return int(((MeatPackLookupTableValue[ord(high)] & 0xF) << 4) | (MeatPackLookupTableValue[ord(low)] & 0xF))
 
 
 # -------------------------------------------------------------------------------
-def is_packable(char) -> bool:
+def is_packable(char):
     return False if MeatPackLookupTablePackable[ord(char)] == 0 else True
 
 
 # -------------------------------------------------------------------------------
-def set_no_spaces(no_spaces: bool):
+def set_no_spaces(no_spaces):
     global MeatPackOmitWhitespaces
     global MeatPackLookupTablePackable
     global MeatPackLookupTableValue
@@ -103,7 +103,7 @@ def set_no_spaces(no_spaces: bool):
 
 
 # -------------------------------------------------------------------------------
-def get_command_bytes(command) -> bytearray:
+def get_command_bytes(command):
     out = bytearray()
     out.append(MPCommand_SignalByte)
     out.append(MPCommand_SignalByte)
@@ -112,7 +112,7 @@ def get_command_bytes(command) -> bytearray:
 
 
 # -------------------------------------------------------------------------------
-def _unified_method(line: str) -> str:
+def _unified_method(line):
     # If it's an "M" command, leave it unchanged.
     m_idx = line.find('M')
     if m_idx >= 0:
@@ -143,7 +143,7 @@ def _unified_method(line: str) -> str:
 
 
 # -------------------------------------------------------------------------------
-def pack_line(line: str, logger=None) -> bytearray:
+def pack_line(line, logger=None):
     bts = bytearray()
 
     if line[0] == ';':
@@ -197,7 +197,7 @@ def pack_line(line: str, logger=None) -> bytearray:
 
 
 # -------------------------------------------------------------------------------
-def pack_file(in_filename: str, out_filename: str):
+def pack_file(in_filename, out_filename):
     in_file = open(in_filename, "r")
     out_file = open(out_filename, "wb")
 
@@ -227,7 +227,7 @@ def pack_file(in_filename: str, out_filename: str):
 
 
 # -------------------------------------------------------------------------------
-def strip_comments(in_filename: str, out_filename: str):
+def strip_comments(in_filename, out_filename):
     in_file = open(in_filename, "r")
     out_file = open(out_filename, "wb")
 

@@ -21,7 +21,7 @@ class ThreadedSongPlayer:
     def terminate(self):
         self._running = False
 
-    def is_running(self) -> bool:
+    def is_running(self):
         return self._running
 
     def run(self):
@@ -103,7 +103,7 @@ class PackingSerial(Serial):
         return self._packing_enabled
 
     @packing_enabled.setter
-    def packing_enabled(self, value: bool):
+    def packing_enabled(self, value):
         # Set before anything else, to buffer data while state is synchronized.
         self._sync_pending = True
         self._packing_enabled = value
@@ -115,7 +115,7 @@ class PackingSerial(Serial):
         return self._no_spaces
 
     @omit_all_spaces.setter
-    def omit_all_spaces(self, value: bool):
+    def omit_all_spaces(self, value):
         # Set before anything else, to buffer data while state is synchronized.
         self._sync_pending = True
         self._no_spaces = value
@@ -127,7 +127,7 @@ class PackingSerial(Serial):
         return self._log_transmission_stats
 
     @log_transmission_stats.setter
-    def log_transmission_stats(self, value: bool):
+    def log_transmission_stats(self, value):
         if self._log_transmission_stats != value:
             self._log_transmission_stats = value
             self._diagBytesSent = 0
@@ -172,13 +172,13 @@ class PackingSerial(Serial):
             self._config_sync_flags[i] = 0
 
 # -------------------------------------------------------------------------------
-    def _stable_state(self) -> bool:
+    def _stable_state(self):
         if not self._sync_pending and self._confirmed_sync:
             return True
         return False
 
 # -------------------------------------------------------------------------------
-    def readline(self, **kwargs) -> bytes:
+    def readline(self, **kwargs):
         read = super(PackingSerial, self).readline(**kwargs)
 
         read_str = read.decode("UTF-8")
@@ -303,7 +303,7 @@ class PackingSerial(Serial):
         self._song_player_thread.start()
 
     # -------------------------------------------------------------------------------
-    def get_transmission_stats(self) -> dict:
+    def get_transmission_stats(self):
         return {
             'totalBytes': self._diagBytesSentTotal,
             'packedBytes': self._diagBytesSentActualTotal,
@@ -343,7 +343,7 @@ class PackingSerial(Serial):
                 self._buffer.clear()
 
 # -------------------------------------------------------------------------------
-    def _process_line_bytes(self, line: bytes):
+    def _process_line_bytes(self, line):
         if not self._packing_enabled:
             return line
         str_line = line.decode("UTF-8")
@@ -373,7 +373,7 @@ class PackingSerial(Serial):
         return total_bytes
 
 # -------------------------------------------------------------------------------
-    def query_config_state(self, force: bool = False):
+    def query_config_state(self, force = False):
         """Queries the packing state from the system. Sends command and awaits response"""
         if self.isOpen():
 

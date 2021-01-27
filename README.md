@@ -4,14 +4,14 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ## Firmware with MeatPack Support:
 
-* Marlin (merged Jan. 25, 2021) - check to make sure the build you are using has the `MEATPACK` option enabled during build. Some build servers do not have this enabled, so if the plugin does not work or it fails to connnect, this is likely why.
+* Marlin (merged Jan. 25, 2021) - this is still being tested. It is officially merged, but check to make sure the build you are using has the `MEATPACK` option enabled during build. Some build servers do not have this enabled, so if the plugin does not work or it fails to connnect, this is likely why.
 * Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
 
 ## OctoPrint Support:
 
-Should be compatible with any OctoPrint installation providing access to the `serial_factory_hook()`. According to the API documentation, this wasintoruced in OctoPrint version 1.2. As far as Python is concerned, version 1.5.9 should be compatible back to 2.7 (only tested from 3.5 onward), but it is **highly** recommended to update to Python 3 if you have not yet done so.
+Should be compatible with any OctoPrint installation providing access to the `serial_factory_hook()`. According to the API documentation, this wasintoruced in OctoPrint version 1.2. As far as Python is concerned, version 1.5.14 should be compatible back to 2.7, but it is **highly** recommended to update to Python 3 if you have not yet done so.
 
-## Current Features (v1.5.9)
+## Current Features (v1.5.14)
 
 1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
