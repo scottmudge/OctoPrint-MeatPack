@@ -181,7 +181,7 @@ class PackingSerial(Serial):
     def readline(self, **kwargs):
         read = super(PackingSerial, self).readline(**kwargs)
 
-        read_str = read.decode("UTF-8")
+        read_str = read.decode("UTF-8", errors="ignore")
 
         # Reset
         if "start" in read_str:
@@ -346,7 +346,7 @@ class PackingSerial(Serial):
     def _process_line_bytes(self, line):
         if not self._packing_enabled:
             return line
-        str_line = line.decode("UTF-8")
+        str_line = line.decode("UTF-8", errors="ignore")
         if self.play_song_on_print_complete:
             if "M84" in str_line:
                 self._log("End of print detected, playing song...")

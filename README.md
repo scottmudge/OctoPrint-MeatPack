@@ -4,7 +4,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ## Firmware with MeatPack Support:
 
-### NOTICE: Currently (10:00 PM EST, Jan 26, 2021), Marlin has a minor bug (missing character in serial output) which breaks its ability to interface with the OctoPrint plugin. Wait until it is corrected to use pre-built images, or merge the PR here to a local branch and build Marlin yourself: https://github.com/MarlinFirmware/Marlin/pull/20896
+### NOTICE: If you have a __Marlin__ compatible printer, please use the latest firmware image (built after 2021-01-27 12:50:00 UTC) from: [https://marlin.crc.id.au/](https://marlin.crc.id.au/). These builds should all have MeatPack support!
 
 * Marlin (merged Jan. 25, 2021) - this is still being tested. It is officially merged, but check to make sure the build you are using has the `MEATPACK` option enabled during build. Some build servers do not have this enabled, so if the plugin does not work or it fails to connnect, this is likely why.
 * Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
@@ -13,7 +13,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 Should be compatible with any OctoPrint installation providing access to the `serial_factory_hook()`. According to the API documentation, this wasintoruced in OctoPrint version 1.2. As far as Python is concerned, as of MeatPack version 1.5.17, it should be compatible back to 2.7, but it is **highly** recommended to update to Python 3 if you have not yet done so.
 
-## Current Features (v1.5.18)
+## Current Features (v1.5.21)
 
 1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
