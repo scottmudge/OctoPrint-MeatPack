@@ -113,33 +113,34 @@ def get_command_bytes(command):
 
 # -------------------------------------------------------------------------------
 def _unified_method(line):
-    # If it's an "M" command, leave it unchanged.
-    m_idx = line.find('M')
+    # If it's an "G" command, then remove whitespace.
+    m_idx = line.find('G')
     if m_idx >= 0:
+        # check to see if the "G" has a number after.
         if 48 <= ord(line[m_idx + 1]) <= 57:
+            # Fix case capitalization for relevant letters (only packable ones)
+            # It's faster to chain them together like this then make a
+            # separate assignment/call to replace.
+            if MeatPackOmitWhitespaces:
+                line = line.replace('e', 'E').replace('x', 'X').replace('g', 'G')
+            else:
+                line = line.replace('x', 'X').replace('g', 'G')
+
+            # Strip whitespace
+            stripped = line.replace(' ', '')
+
+            # Check for asterisk, meaning there is a checksum we need to recompute after
+            # stripping whitespace out
+            if '*' in line:
+                checksum = 0
+                stripped = stripped.partition('*')[0]
+                for i, v in enumerate(stripped):
+                    checksum ^= ord(v)
+                return stripped + "*" + str(checksum) + "\n"
+
+            return stripped
+        else:
             return line
-
-    # Fix case capitalization for relevant letters (only packable ones)
-    # It's faster to chain them together like this then make a
-    # separate assignment/call to replace.
-    if MeatPackOmitWhitespaces:
-        line = line.replace('e', 'E').replace('x', 'X').replace('g', 'G')
-    else:
-        line = line.replace('x', 'X').replace('g', 'G')
-
-    # Strip whitespace
-    stripped = line.replace(' ', '')
-
-    # Check for asterisk, meaning there is a checksum we need to recompute after
-    # stripping whitespace out
-    if '*' in line:
-        checksum = 0
-        stripped = stripped.partition('*')[0]
-        for i, v in enumerate(stripped):
-            checksum ^= ord(v)
-        return stripped + "*" + str(checksum) + "\n"
-
-    return stripped
 
 
 # -------------------------------------------------------------------------------
