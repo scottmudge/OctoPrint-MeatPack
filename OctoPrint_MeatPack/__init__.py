@@ -116,6 +116,7 @@ class MeatPackPlugin(
     def create_serial_obj(self):
         if not self._serial_obj:
             self._serial_obj = PackingSerial(self._logger)
+
             self._serial_obj.statsUpdateCallback = self.serial_obj_stats_update_callback
 
     def serial_obj_stats_update_callback(self):

@@ -41,7 +41,7 @@ class ThreadedSongPlayer:
             if not self._running:
                 break
 
-            self._serial.write(bytes(note_text, "UTF-8"))
+            self._serial.write(note_text.encode("UTF-8"))
             sleep_per = float(note_len_ms + note_len_offset_ms) / 1000.0
             if sleep_per > 0.0:
                 time.sleep(sleep_per)
@@ -340,7 +340,7 @@ class PackingSerial(Serial):
             if len(self._buffer) > 0:
                 for line in self._buffer:
                     super(PackingSerial, self).write(self._process_line_bytes(line))
-                self._buffer.clear()
+                del self._buffer[:]  # clear buffer
 
 # -------------------------------------------------------------------------------
     def _process_line_bytes(self, line):
@@ -373,7 +373,7 @@ class PackingSerial(Serial):
         return total_bytes
 
 # -------------------------------------------------------------------------------
-    def query_config_state(self, force = False):
+    def query_config_state(self, force=False):
         """Queries the packing state from the system. Sends command and awaits response"""
         if self.isOpen():
 
