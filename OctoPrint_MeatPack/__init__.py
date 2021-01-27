@@ -89,7 +89,7 @@ class MeatPackPlugin(
             enableMeatPack=True,
             logTransmissionStats=True,
             playSongOnPrintComplete=False,
-            omitSpaces=False
+            omitSpaces=True
         )
 
 # -------------------------------------------------------------------------------
