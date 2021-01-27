@@ -11,7 +11,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ## OctoPrint Support:
 
-Should be compatible with any OctoPrint installation providing access to the `serial_factory_hook()`. According to the API documentation, this wasintoruced in OctoPrint version 1.2. As far as Python is concerned, as of MeatPack version 1.5.17, it should be compatible back to 2.7, but it is **highly** recommended to update to Python 3 if you have not yet done so.
+Should be compatible with any OctoPrint installation providing access to the `serial_factory_hook()`. According to the API documentation, this was intoruced in OctoPrint version 1.2. As far as Python is concerned, as of MeatPack version 1.5.17, it should be compatible back to 2.7, but it is **highly** recommended to update to Python 3 if you have not yet done so.
 
 ## Current Features (v1.5.21)
 
