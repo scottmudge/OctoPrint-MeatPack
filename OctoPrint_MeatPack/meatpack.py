@@ -116,6 +116,11 @@ def _unified_method(line):
     # If it's an "G" command, then remove whitespace.
     m_idx = line.find('G')
     if m_idx >= 0:
+
+        # Check to see if the G is at the end of the line
+        if m_idx + 1 >= len(line):
+            return line
+
         # check to see if the "G" has a number after.
         if 48 <= ord(line[m_idx + 1]) <= 57:
             # Fix case capitalization for relevant letters (only packable ones)
@@ -137,10 +142,9 @@ def _unified_method(line):
                 for i, v in enumerate(stripped):
                     checksum ^= ord(v)
                 return stripped + "*" + str(checksum) + "\n"
-
             return stripped
-        else:
-            return line
+    # otherwise return line
+    return line
 
 
 # -------------------------------------------------------------------------------
