@@ -6,7 +6,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ### NOTICE: If you have a compatible Creality printer for Marlin Firmware Service, please use the latest firmware image (built after 2021-01-27 12:50:00 UTC) from: [https://marlin.crc.id.au/](https://marlin.crc.id.au/). These builds should all have MeatPack support!
 
-* Marlin (merged Jan. 25, 2021) - this is still being tested. It is officially merged, but check to make sure the build you are using has the `MEATPACK` option enabled during build. See note above for compatible Creality printers, this patch is already integrated.
+* Marlin (merged Jan. 25, 2021) - given that this was merged recently, not all builds will include it or have it enabled, so double check. The `MEATPACK` precompiler option should be enabled during build. See note above for compatible Creality printers.
 * Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
 
 ## OctoPrint Support:
