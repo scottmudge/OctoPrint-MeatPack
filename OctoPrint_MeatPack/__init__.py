@@ -43,36 +43,40 @@ class MeatPackPlugin(
         self.create_serial_obj()
         self.sync_settings_with_serial_obj()
 
-        self._serial_obj.timeout = read_timeout
-        self._serial_obj.write_timeout = 0
-        if baudrate == 0:
-            self._serial_obj.baudrate = 115200
-        else:
-            self._serial_obj.baudrate = baudrate
-        self._serial_obj.port = str(port)
+        try:
+            self._serial_obj.timeout = read_timeout
+            self._serial_obj.write_timeout = 0
+            if baudrate == 0:
+                self._serial_obj.baudrate = 115200
+            else:
+                self._serial_obj.baudrate = baudrate
+            self._serial_obj.port = str(port)
 
-        # Parity workaround needed for linux
-        use_parity_workaround = settings().get(["serial", "useParityWorkaround"])
-        needs_parity_workaround = get_os() == "linux" and os.path.exists("/etc/debian_version")  # See #673
+            # Parity workaround needed for linux
+            use_parity_workaround = settings().get(["serial", "useParityWorkaround"])
+            needs_parity_workaround = get_os() == "linux" and os.path.exists("/etc/debian_version")  # See #673
 
-        if use_parity_workaround == "always" or (needs_parity_workaround and use_parity_workaround == "detect"):
-            self._serial_obj.parity = serial.PARITY_ODD
+            if use_parity_workaround == "always" or (needs_parity_workaround and use_parity_workaround == "detect"):
+                self._serial_obj.parity = serial.PARITY_ODD
+                self._serial_obj.open()
+                self._serial_obj.close()
+                self._serial_obj.parity = serial.PARITY_NONE
+
             self._serial_obj.open()
-            self._serial_obj.close()
-            self._serial_obj.parity = serial.PARITY_NONE
 
-        self._serial_obj.open()
+            # Set close_exec flag on serial handle, see #3212
+            if hasattr(self._serial_obj, "fd"):
+                # posix
+                set_close_exec(self._serial_obj.fd)
+            elif hasattr(self._serial_obj, "_port_handle"):
+                # win32
+                # noinspection PyProtectedMember
+                set_close_exec(self._serial_obj._port_handle)
 
-        # Set close_exec flag on serial handle, see #3212
-        if hasattr(self._serial_obj, "fd"):
-            # posix
-            set_close_exec(self._serial_obj.fd)
-        elif hasattr(self._serial_obj, "_port_handle"):
-            # win32
-            # noinspection PyProtectedMember
-            set_close_exec(self._serial_obj._port_handle)
-
-        self._serial_obj.query_config_state()
+            self._serial_obj.query_config_state()
+        except serial.SerialException as e:
+            self._logger.warning("failed to establish connection with serial port {} at baud rate {}\n\tException: {}".
+                                 format(str(port), str(baudrate), repr(e)))
 
         return self._serial_obj
 
