@@ -6,7 +6,7 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 ### NOTICE: If you have a compatible Creality printer for Marlin Firmware Service, please use the latest firmware image (built after 2021-01-27 12:50:00 UTC) from: [https://marlin.crc.id.au/](https://marlin.crc.id.au/). These builds should all have MeatPack support!
 
-* Marlin (merged Jan. 25, 2021) - __NOTICE__: It looks like there might be a problem on the official Marlin repo. They merged my PR, but did quite a bit of refactoring, and it may have broken MeatPack support. Use this commit/node to merge (https://github.com/scottmudge/Marlin/commit/01483c9541e3150f809f66c65ae107571797dc6f) until it's worked out. The `MEATPACK` precompiler option should be enabled during build. See note above for compatible Creality printers.
+* Marlin (merged Jan. 25, 2021)
 * Prusa (official build reviewing support, unofficial build with support available at https://github.com/scottmudge/Prusa-Firmware-MeatPack)
 
 ## OctoPrint Support:
@@ -33,7 +33,7 @@ Should be compatible with any OctoPrint installation providing access to the `se
 
 **NOTE:** To use MeatPack, please install an updated build of **Marlin Firmware** with MeatPack support integrated, or for **Prusa printers**, install compatible version of the Prusa firmware here:
 
-**Prusa Firmware** with MeatPack-support (MP-Firmware v1.1.0, based on Prusa FW 3.9.3): https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
+**Prusa Firmware** with MeatPack-support (based on Prusa FW 3.10.0): https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.10.0-MeatPack
 
 ## Installation
 
