@@ -19,7 +19,7 @@ Because MeatPack works on a different principle than *Arc Welder*, it *is* possi
 
 With both plugins combined, I was able to compress a 5 MB gcode file of a cylinder (best-case scenario for Arc Welder) to 500 kB, a **10x reduction** in size!
 
-If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3 firmware (linked above), and merging in FormalLurker's MK3 fork, which improves the quality and efficiency of the 7arc motion-planning feature of the MK3 firmware.
+If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3 firmware (linked above), and merging in FormalLurker's MK3 fork, which improves the quality and efficiency of the arc motion-planning feature of the MK3 firmware.
 
 ## Current Features (v1.5.21)
 
