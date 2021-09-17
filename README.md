@@ -13,6 +13,12 @@ Getting to the **meat** of g-code. Easy, fast, effective, and automatic g-code c
 
 Should be compatible with any OctoPrint installation providing access to the `serial_factory_hook()`. According to the API documentation, this was intoruced in OctoPrint version 1.2. As far as Python is concerned, as of MeatPack version 1.5.17, it should be compatible back to 2.7, but it is **highly** recommended to update to Python 3 if you have not yet done so.
 
+## Arc Welder Compatibility:
+
+Because MeatPack works on a different principle than *Arc Welder*, it *is* possible to combine MeatPack with the [Arc Welder: Anti-Stutter](https://github.com/FormerLurker/ArcWelderPlugin) OctoPrint plugin to further compress gcode. It's as simple as installing and enabling both plugins, and to allow Arc Welder to preprocess your gcode files before starting a print.
+
+With both plugins combined, I was able to compress a 5 MB gcode file of a cylinder (best-case scenario for Arc Welder) to 500 kB, a **10x reduction** in size!
+
 ## Current Features (v1.5.21)
 
 1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
