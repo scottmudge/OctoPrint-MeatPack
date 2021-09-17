@@ -19,6 +19,8 @@ Because MeatPack works on a different principle than *Arc Welder*, it *is* possi
 
 With both plugins combined, I was able to compress a 5 MB gcode file of a cylinder (best-case scenario for Arc Welder) to 500 kB, a **10x reduction** in size!
 
+If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3 firmware (linked above), and merging in FormalLurker's MK3 fork, which improves the quality and efficiency of the 7arc motion-planning feature of the MK3 firmware.
+
 ## Current Features (v1.5.21)
 
 1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
