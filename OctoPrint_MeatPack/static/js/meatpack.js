@@ -34,7 +34,7 @@ $(function() {
         var txt_no_data = gettext("No data");
 
         var txt_lbl_disabled = gettext("Disabled");
-        var txt_lbl_enabled = gettext("Disabled");
+        var txt_lbl_enabled = gettext("Enabled");
 
         self.transmissionStats = ko.observableArray([]);
         self.dataReceived = false;
