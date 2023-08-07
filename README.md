@@ -21,7 +21,7 @@ If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3
 
 ## Current Features (v1.5.21)
 
-1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Marlin FW now officially supprots MeatPack, but **[NOTE]** until **Prusa** approves these changes, please find builds of the official Prusa Firmware with compression support here: https://github.com/scottmudge/Prusa-Firmware-MeatPack
+1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Both Marlin and the official Prusa MK2/3/3S+ firmwares now officially support MeatPack. See the Firmware section above for which versions/build dates are compatible. 
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
 ![image](https://user-images.githubusercontent.com/19617165/103969227-79963080-5133-11eb-95f1-a39866031f21.png)
 
