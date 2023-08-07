@@ -37,10 +37,6 @@ If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3
 3. A feature called "Whitespace Removal", which strips away all unnecessary whitespace from outgoing gcode on the serial port. This also allows the 'E' character to be packed in place of the ' ' space character. This effectively boosts the compression ratio down to 0.55!
 4. Added an optional feature (can be enabled in plugin settings) to play a "meatball" song on the printer after a print is completed.  See the bottom of the readme why everything is "meat" themed.
 
-**NOTE:** To use MeatPack, please install an updated build of **Marlin Firmware** with MeatPack support integrated, or for **Prusa printers**, install compatible version of the Prusa firmware here:
-
-**Prusa Firmware** with MeatPack-support (based on Prusa FW 3.10.0): https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.10.0-MeatPack
-
 ## Installation
 
 **UPDATE:** OctoPrint has approved this plugin for the official plugin repository, so it should be available to install via the in-built plugin manager now. If you'd still rather manually install it, please follow the instructions below.
@@ -55,7 +51,7 @@ If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3
 
 2. After activating the OctoPrint environment, run the following command:
 
-`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.5.9.zip`
+`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.5.21.zip`
 
 3. Restart your OctoPrint server, or restart the machine.
 
@@ -63,9 +59,7 @@ If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3
 
 ### Known Limitations:
 
-1. This requires a minor modification to your printer's firmware! Marlin has officially adopted support, but Prusa is currently reviewing changes. I have currently compiled modified firmware for Prusa's MK3/3S printers, available above. 
-
-2. It doesn't work with the Virtual Printer in OctoPrint. Obviously... it's not a real serial connection.
+* It doesn't work with the Virtual Printer in OctoPrint. Obviously... it's not a real serial connection.
 
 ## Why compress/pack G-Code? What is this?
 
