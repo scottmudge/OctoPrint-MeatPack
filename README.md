@@ -19,7 +19,7 @@ With both plugins combined, I was able to compress a 5 MB gcode file of a cylind
 
 If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3 firmware (linked above), and merging in FormalLurker's MK3 fork, which improves the quality and efficiency of the arc motion-planning feature of the MK3 firmware.
 
-## Current Features (v1.5.21)
+## Current Features (v1.5.22)
 
 1. Fully working g-code compression ("MeatPack") support for compatible printer firmwares. Both Marlin and the official Prusa MK2/3/3S+ firmwares now officially support MeatPack. See the Firmware section above for which versions/build dates are compatible. 
 2. Added extra data to the "State" side-bar content, updated in real time. It shows transmission statistics:
@@ -51,7 +51,7 @@ If using a Prusa MK3, I also recommend creating a local fork of the MeatPack MK3
 
 2. After activating the OctoPrint environment, run the following command:
 
-`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.5.21.zip`
+`pip install https://github.com/scottmudge/OctoPrint-MeatPack/archive/v1.5.22.zip`
 
 3. Restart your OctoPrint server, or restart the machine.
 
@@ -154,3 +154,23 @@ My cat's name is Meatball, I thought it sounded fun.
 Obligatory cat photo:
 
 ![photo](https://i.imgur.com/QgUuyzs.png)
+
+## License
+
+#### MeatPack is licensed under 4-Clause BSD:
+
+Copyright (c) 2023 Scott Mudge. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+   
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+   
+3. All advertising materials mentioning features or use of this software must display the following acknowledgement:
+This product includes software developed by the organization.
+
+1. Neither the name of the copyright holder nor the names the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+   
+THIS SOFTWARE IS PROVIDED BY COPYRIGHT HOLDER "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDER BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+

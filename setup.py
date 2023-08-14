@@ -12,7 +12,7 @@ plugin_package = "OctoPrint_MeatPack"
 plugin_name = "OctoPrint-MeatPack"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "1.5.21"
+plugin_version = "1.5.22"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
@@ -28,7 +28,7 @@ plugin_author_email = "mail@scottmudge.com"
 plugin_url = "https://github.com/scottmudge/OctoPrint-MeatPack"
 
 # The plugin's license. Can be overwritten within OctoPrint's internal data via __plugin_license__ in the plugin module
-plugin_license = "AGPLv3"
+plugin_license = "BSD-4-Clause"
 
 # Any additional requirements besides OctoPrint should be listed here
 plugin_requires = []
