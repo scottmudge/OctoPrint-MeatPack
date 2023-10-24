@@ -19,8 +19,14 @@
             <div class="controls">
                 <label class="checkbox">
                     <input type="checkbox" data-bind="checked: settings.plugins.meatpack.logTransmissionStats">
-                    Show Transmission Statistics
+                    Show Transmission Statistics&hellip;
                 </label>
+            </div>
+            <div class="controls" data-bind="visible:settings.plugins.meatpack.logTransmissionStats">
+                in <select data-bind="value: settings.plugins.meatpack.logTransmissionStatsType">
+                    <option value="state">Inside State panel</option>
+                    <option value="standalone">Standalone panel</option>
+                </select>
             </div>
         </div>
     </fieldset>
