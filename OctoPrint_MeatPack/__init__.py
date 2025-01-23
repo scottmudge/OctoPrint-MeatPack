@@ -10,8 +10,8 @@ import os
 from OctoPrint_MeatPack.packing_serial import PackingSerial
 
 __author__ = "Scott Mudge <mail@scottmudge.com, https://scottmudge.com>"
-__license__ = "BSD-4-Clause License - https://raw.githubusercontent.com/scottmudge/OctoPrint-MeatPack/master/LICENSE"
-__copyright__ = "Copyright (C) 2020-2023 Scott Mudge - Released under terms of the BSD-4-Clause License"
+__license__ = "BSD-3-Clause License - https://raw.githubusercontent.com/scottmudge/OctoPrint-MeatPack/master/LICENSE"
+__copyright__ = "Copyright (C) 2020-2025 Scott Mudge - Released under terms of the BSD-3-Clause License"
 
 
 class MeatPackPlugin(
